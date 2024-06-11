@@ -1,7 +1,7 @@
 import Config
 
 # Configure your database
-config :api, Stat.Repo,
+config :stat, Stat.Repo,
   database: Path.expand("../stat_dev.db", __DIR__),
   pool_size: 5,
   stacktrace: true,
@@ -13,7 +13,7 @@ config :api, Stat.Repo,
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
-config :api, StatWeb.Endpoint,
+config :stat, StatWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {127, 0, 0, 1}, port: 4000],
@@ -22,8 +22,8 @@ config :api, StatWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "4nPmRtya9Og/L7rj7bDHuOjwsj2BO4Doy05U+3c8yOVl6oDET70JJUIlFHbqzvxN",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:api, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:api, ~w(--watch)]}
+    esbuild: {Esbuild, :install_and_run, [:stat, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:stat, ~w(--watch)]}
   ]
 
 # ## SSL Support
@@ -50,7 +50,7 @@ config :api, StatWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :api, StatWeb.Endpoint,
+config :stat, StatWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
@@ -60,7 +60,7 @@ config :api, StatWeb.Endpoint,
   ]
 
 # Enable dev routes for dashboard and mailbox
-config :api, dev_routes: true
+config :stat, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"

@@ -11,9 +11,9 @@ defmodule Stat.Application do
       StatWeb.Telemetry,
       Stat.Repo,
       {Ecto.Migrator,
-        repos: Application.fetch_env!(:api, :ecto_repos),
+        repos: Application.fetch_env!(:stat, :ecto_repos),
         skip: skip_migrations?()},
-      {DNSCluster, query: Application.get_env(:api, :dns_cluster_query) || :ignore},
+      {DNSCluster, query: Application.get_env(:stat, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Stat.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: Stat.Finch},

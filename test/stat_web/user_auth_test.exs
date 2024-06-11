@@ -6,7 +6,7 @@ defmodule StatWeb.UserAuthTest do
   alias StatWeb.UserAuth
   import Stat.AccountsFixtures
 
-  @remember_me_cookie "_api_web_user_remember_me"
+  @remember_me_cookie "_stat_web_user_remember_me"
 
   setup %{conn: conn} do
     conn =

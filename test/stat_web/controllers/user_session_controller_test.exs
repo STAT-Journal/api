@@ -50,7 +50,7 @@ defmodule StatWeb.UserSessionControllerTest do
           }
         })
 
-      assert conn.resp_cookies["_api_web_user_remember_me"]
+      assert conn.resp_cookies["_stat_web_user_remember_me"]
       assert redirected_to(conn) == ~p"/"
     end
 

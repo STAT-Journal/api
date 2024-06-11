@@ -3,7 +3,7 @@ defmodule Stat.MixProject do
 
   def project do
     [
-      app: :api,
+      app: :stat,
       version: "0.1.0",
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -75,10 +75,10 @@ defmodule Stat.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind api", "esbuild api"],
+      "assets.build": ["tailwind stat", "esbuild stat"],
       "assets.deploy": [
-        "tailwind api --minify",
-        "esbuild api --minify",
+        "tailwind stat --minify",
+        "esbuild stat --minify",
         "phx.digest"
       ]
     ]

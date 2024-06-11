@@ -1,3 +1,3 @@
 defmodule Stat.Mailer do
-  use Swoosh.Mailer, otp_app: :api
+  use Swoosh.Mailer, otp_app: :stat
 end
