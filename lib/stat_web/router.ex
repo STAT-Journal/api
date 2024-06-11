@@ -61,6 +61,14 @@ defmodule StatWeb.Router do
     put "/users/reset_password/:token", UserResetPasswordController, :update
   end
 
+  # Mobile
+  scope "/", StatWeb do
+    pipe_through [:api]
+
+    get "/users/mobile_log_in", UserSessionController, :new
+    post "/users/mobile_log_in", UserSessionController, :create_mobile
+  end
+
   scope "/", StatWeb do
     pipe_through [:browser, :require_authenticated_user]
 

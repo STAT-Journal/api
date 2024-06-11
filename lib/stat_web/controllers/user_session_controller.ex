@@ -26,4 +26,20 @@ defmodule StatWeb.UserSessionController do
     |> put_flash(:info, "Logged out successfully.")
     |> UserAuth.log_out_user()
   end
+
+  # For mobile apps
+  def create_mobile(conn, %{"user" => user_params}) do
+    %{"email" => email, "password" => password} = user_params
+
+    if user = Accounts.get_user_by_email_and_password(email, password) do
+      token = Accounts.create_user_mobile_token(user)
+      conn
+      |> json(%{token: token})
+
+    else
+      conn
+      |> put_status(:unauthorized)
+      |> json(%{error: "Invalid email or password"})
+    end
+  end
 end
