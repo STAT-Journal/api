@@ -22,7 +22,7 @@ end
 
 if config_env() == :prod do
   database_path =
-    System.get_env("DATABASE_PATH") ||
+    System.get_env("DATABASE_PATH") || "stat.db" ||
       raise """
       environment variable DATABASE_PATH is missing.
       For example: /etc/stat/stat.db
