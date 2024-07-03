@@ -1,0 +1,40 @@
+<div class="mx-auto max-w-sm">
+    <.header class="text-center">New WeeklyCheckIn</.header>
+
+    
+    <.simple_form :let={f} for={@changeset} id="new_weekly_check_in" action={~p"/posts/weeklycheckin"}>
+        <.error :if={@changeset.action == :insert}>
+        Oops, something went wrong! Please check the errors below.
+        </.error>
+        <%!-- Hidden fields --%>
+        <.input
+            field={f[:week_number]}
+            type="number"
+            style="display: none"
+        />
+        <.input
+            field={f[:year]}
+            type="number"
+            style="display: none"
+        />
+        <.input
+            field={f[:user_id]}
+            type="number"
+            style="display: none"
+        />
+
+
+        <!-- radio buttons for valence Enum in changeset -->
+        <.valence_radio_list />
+
+        <.input field={f[:anonymize]} type="checkbox" label="Anonymize" />
+
+        <:actions>
+            <.button phx-disable-with="Creating weeklycheckin..." class="w-full">Create WeeklyCheckIn</.button>
+        </:actions>
+
+        <%!-- Todo: sticker --%>
+
+        
+    </.simple_form>
+</div>

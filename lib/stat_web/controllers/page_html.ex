@@ -6,5 +6,7 @@ defmodule StatWeb.PageHTML do
   """
   use StatWeb, :html
 
+  import StatWeb.PostWeeklyCheckInHTML
+
   embed_templates "page_html/*"
 end

@@ -1,0 +1,9 @@
+<div class="mx-auto max-w-sm">
+    <.header class="text-center">Moments</.header>
+
+    <.table id="moments" rows={@moments}>
+        <:col :let={m} label="id"><%= m.id %></:col>
+        <:col :let={m} label="type"><%= m.type %></:col>
+        <:col :let={m} label="inserted_at"><%= m.inserted_at %></:col>
+    </.table>
+</div>

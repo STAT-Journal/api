@@ -64,3 +64,8 @@ config :phoenix, :json_library, Jason
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
+
+# Background jobs
+config :stat, Stat.PeriodicConsumablesScheduler,
+  cron: "0 * * * *", # every hour
+  job: {Stat.PeriodicConsumablesScheduler, :run, []}

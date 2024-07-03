@@ -8,6 +8,9 @@ defmodule Stat.Accounts.User do
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
 
+    has_many :weeklycheckins, Stat.Posts.WeeklyCheckIn
+    has_many :moments, Stat.Posts.Moment
+
     timestamps(type: :utc_datetime)
   end
 

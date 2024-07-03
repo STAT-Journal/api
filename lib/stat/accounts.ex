@@ -8,6 +8,10 @@ defmodule Stat.Accounts do
 
   alias Stat.Accounts.{User, UserToken, UserNotifier}
 
+  def list_users() do
+    Repo.all(User)
+  end
+
   ## Database getters
 
   @doc """
@@ -362,6 +366,15 @@ defmodule Stat.Accounts do
     with {:ok, query} <- UserToken.verify_email_token_query(token, "api-token"),
         %User{} = user <- Repo.one(query) do
       {:ok, user}
+    else
+      _ -> :error
+    end
+  end
+
+  def delete_user_mobile_token(token) do
+    with {:ok, _user} <- fetch_user_mobile_token(token) do
+      Repo.delete_all(UserToken.by_token_and_context_query(token, ["api-token"]))
+      :ok
     else
       _ -> :error
     end

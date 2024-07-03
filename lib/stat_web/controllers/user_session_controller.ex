@@ -42,4 +42,17 @@ defmodule StatWeb.UserSessionController do
       |> json(%{error: "Invalid email or password"})
     end
   end
+
+
+  def delete_mobile(conn, %{"token" => token}) do
+    with {:ok, _user} <- Accounts.fetch_user_mobile_token(token) do
+      Accounts.delete_user_mobile_token(token)
+      conn |> json(%{message: "Logged out successfully"})
+    else
+      _ ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: "Invalid token"})
+    end
+  end
 end

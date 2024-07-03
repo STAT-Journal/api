@@ -1,9 +1,14 @@
 defmodule StatWeb.UserRegistrationController do
   use StatWeb, :controller
 
-  alias Stat.Accounts
+  require Ecto.Query
+  alias Stat.Repo
+  alias Stat.{Accounts, Profiles}
   alias Stat.Accounts.User
   alias StatWeb.UserAuth
+
+  alias Ecto.Query
+  alias Stat.Locations.City
 
   def new(conn, _params) do
     changeset = Accounts.change_user_registration(%User{})
@@ -18,6 +23,13 @@ defmodule StatWeb.UserRegistrationController do
             user,
             &url(~p"/users/confirm/#{&1}")
           )
+
+          # Remove after cities are seeded
+        Profiles.create_profile(%{
+          user_id: user.id,
+          username: "default",
+          city_id: Repo.one(Query.from c in City, select: c.id)
+        })
 
         conn
         |> put_flash(:info, "User created successfully.")
