@@ -18,8 +18,8 @@ File.ls!("priv/static/stickers/")
   Enum.map(File.ls!("priv/static/stickers/#{dir}"),
   fn f -> Path.join(dir, f) end) end)
 |> Enum.map fn file ->
-  Repo.insert! %StickerType{
+  Repo.insert!(%StickerType{
     name: Path.join(Path.dirname(file), Path.basename(file, ".png")),
     url: "stickers/#{file}"
-  }
+  })
 end
