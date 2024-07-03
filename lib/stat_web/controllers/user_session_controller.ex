@@ -4,6 +4,8 @@ defmodule StatWeb.UserSessionController do
   alias Stat.Accounts
   alias StatWeb.UserAuth
 
+  import Plug.Conn
+
   def new(conn, _params) do
     render(conn, :new, error_message: nil)
   end

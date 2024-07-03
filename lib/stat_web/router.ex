@@ -1,6 +1,5 @@
 defmodule StatWeb.Router do
   alias StatWeb.UserAuth
-  alias StatWeb.UserSessionController
   use StatWeb, :router
 
   import StatWeb.UserAuth

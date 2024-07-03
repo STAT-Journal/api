@@ -9,8 +9,12 @@ defmodule StatWeb.AdminController do
     current_user = conn.assigns.current_user
     current_user.id
     |> Stat.Roles.make_user_admin()
-    |> put_flash(:info, "User is now an admin")
-    |> redirect(to: ~p"/")
+    |> case do
+      _ ->
+        conn
+        |> put_flash(:info, "User is now an admin")
+        |> redirect(to: ~p"/")
+    end
   end
 
   def run_periodic_consumables_scheduler(conn, _params) do
