@@ -24,11 +24,7 @@ config :stat, StatWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json",
   http: [ip: {0,0,0,0}, port: 4000],
   debug_errors: true,
-  secret_key_base: "4nPmRtya9Og/L7rj7bDHuOjwsj2BO4Doy05U+3c8yOVl6oDET70JJUIlFHbqzvxN",
-  watchers: [
-    esbuild: {Esbuild, :install_and_run, [:stat, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:stat, ~w(--watch)]}
-  ]
+  secret_key_base: "4nPmRtya9Og/L7rj7bDHuOjwsj2BO4Doy05U+3c8yOVl6oDET70JJUIlFHbqzvxN"
 
 # ## SSL Support
 #
