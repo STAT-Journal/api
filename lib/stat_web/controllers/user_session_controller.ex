@@ -36,7 +36,12 @@ defmodule StatWeb.UserSessionController do
     if user = Accounts.get_user_by_email_and_password(email, password) do
       token = Accounts.create_user_mobile_token(user)
       conn
-      |> json(%{token: token})
+      |> json(%{
+        user: %{
+          email: user.email
+        },
+        token: token
+        })
 
     else
       conn
