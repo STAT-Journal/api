@@ -22,6 +22,12 @@ defmodule Stat.Repo.Migrations.Test do
     create index(:users_tokens, [:user_id])
     create unique_index(:users_tokens, [:context, :token])
 
+    create table(:sticker_types) do
+      add :name, :string, null: false
+      add :url, :string, null: false
+      timestamps(type: :utc_datetime)
+    end
+
     create table(:weekly_check_ins) do
       add :anonymize, :boolean, default: true, null: false
       add :valence, :string, null: false
@@ -48,12 +54,6 @@ defmodule Stat.Repo.Migrations.Test do
       add :username, :string, null: false
       add :city_id, references(:cities, on_delete: :delete_all), null: false
       add :user_id, references(:users, on_delete: :delete_all), null: false
-      timestamps(type: :utc_datetime)
-    end
-
-    create table(:sticker_types) do
-      add :name, :string, null: false
-      add :url, :string, null: false
       timestamps(type: :utc_datetime)
     end
 
