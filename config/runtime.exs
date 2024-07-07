@@ -21,15 +21,16 @@ if System.get_env("PHX_SERVER") do
 end
 
 if config_env() in [:prod, :qa] do
-  database_path =
+  database_url =
     System.get_env("DATABASE_URL") ||
       raise """
       environment variable DATABASE_URL is missing.
-      For example: /etc/stat/stat.db
       """
 
   config :stat, Stat.Repo,
-    database: database_path,
+    url: database_url,
+    database: "",
+    ssl: true,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "5")
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
