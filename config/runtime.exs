@@ -22,9 +22,9 @@ end
 
 if config_env() in [:prod, :qa] do
   database_path =
-    System.get_env("DATABASE_PATH") ||
+    System.get_env("DATABASE_URL") ||
       raise """
-      environment variable DATABASE_PATH is missing.
+      environment variable DATABASE_URL is missing.
       For example: /etc/stat/stat.db
       """
 
