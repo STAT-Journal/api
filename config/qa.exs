@@ -2,10 +2,10 @@ import Config
 
 # Configure your database
 config :stat, Stat.Repo,
-  database: Path.expand("../stat_dev.db", __DIR__),
   pool_size: 5,
   stacktrace: true,
-  show_sensitive_data_on_connection_error: true
+  show_sensitive_data_on_connection_error: false,
+  adapter: Ecto.Adapters.Postgres
 
 
 # Note we also include the path to a cache manifest
