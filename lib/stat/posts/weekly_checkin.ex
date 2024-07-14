@@ -11,9 +11,6 @@ defmodule Stat.Posts.WeeklyCheckIn do
     belongs_to :user, Stat.Accounts.User
     belongs_to :sticker_type, Stat.Consumables.StickerType # Optional
 
-    many_to_many :stickers, Stat.Interactions.Sticker,
-      join_through: "weekly_stickers"
-
     timestamps(type: :utc_datetime)
   end
 
@@ -25,14 +22,6 @@ defmodule Stat.Posts.WeeklyCheckIn do
     |> validate_required([:anonymize, :valence, :week_number, :year, :user_id])
   end
 
-  @spec new_weeklycheckin_changeset(
-          {map(), map()}
-          | %{
-              :__struct__ => atom() | %{:__changeset__ => map(), optional(any()) => any()},
-              optional(atom()) => any()
-            },
-          :invalid | %{optional(:__struct__) => none(), optional(atom() | binary()) => any()}
-        ) :: Ecto.Changeset.t()
   def new_weeklycheckin_changeset(weekly_check_in, attrs) do
     weekly_check_in
     |> cast(attrs, [:user_id, :week_number, :year])

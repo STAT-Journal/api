@@ -10,6 +10,7 @@ defmodule Stat.Accounts.User do
 
     has_many :weeklycheckins, Stat.Posts.WeeklyCheckIn
     has_many :moments, Stat.Posts.Moment
+    has_many :texts, Stat.Posts.Text
 
     timestamps(type: :utc_datetime)
   end

@@ -60,7 +60,8 @@ defmodule Stat.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.2"},
-      {:quantum, "~> 3.0"}
+      {:quantum, "~> 3.0"},
+      {:absinthe, "~> 1.7.7"}
     ]
   end
 

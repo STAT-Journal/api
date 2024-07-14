@@ -1,15 +1,8 @@
-import { useState } from 'react'
-import { Card, Button } from 'flowbite-react';
-import './App.css'
-import TopBar from './components/TopBar';
+import Router from './routes/Router';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-    <TopBar />
-    </>
+    <Router />
   )
 }
 

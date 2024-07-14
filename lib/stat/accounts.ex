@@ -11,7 +11,6 @@ defmodule Stat.Accounts do
   def list_users() do
     Repo.all(User)
   end
-
   ## Database getters
 
   @doc """

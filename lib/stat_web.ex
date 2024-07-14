@@ -17,7 +17,7 @@ defmodule StatWeb do
   those modules here.
   """
 
-  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt stickers)
+  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt stickers webapp)
 
   def router do
     quote do

@@ -3,8 +3,6 @@ defmodule Stat.Interactions.Presence do
   import Ecto.Changeset
 
   schema "interaction_presences" do
-    field :created_at, :utc_datetime
-
     belongs_to :user, Stat.Accounts.User
     belongs_to :circle, Stat.Events.Circle
 
