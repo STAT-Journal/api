@@ -4,7 +4,7 @@ defmodule Stat.Posts.Text do
 
   schema "texts" do
     belongs_to :user, Stat.Accounts.User
-
+    field :deleted_at, :utc_datetime
     field :body, :string
 
     timestamps()
@@ -17,7 +17,4 @@ defmodule Stat.Posts.Text do
     |> cast_assoc(:user)
     |> validate_required([:body, :user_id])
   end
-
-
-
 end

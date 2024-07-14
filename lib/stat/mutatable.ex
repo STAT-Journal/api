@@ -1,6 +1,4 @@
 defprotocol Stat.Mutatable do
-  alias Stat.Repo
-
   def changeset(type, args)
 
   def create(type, args)
@@ -17,13 +15,13 @@ defimpl Stat.Mutatable, for: [Ecto.Schema] do
   def create(type, args) do
     type
     |> changeset(args)
-    |> Repo.insert()
+    |> Stat.Repo.insert()
   end
 
   def create_for_user(type, args, user) do
     type
     |> changeset(args)
     |> Ecto.Changeset.put_assoc(:user, user)
-    |> Repo.insert()
+    |> Stat.Repo.insert()
   end
 end

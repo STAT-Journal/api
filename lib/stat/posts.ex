@@ -1,6 +1,5 @@
 defmodule Stat.Posts do
   import Ecto.Query, warn: false
-  alias Stat.Repo
   import Stat.Queryable
   import Stat.Mutatable
 

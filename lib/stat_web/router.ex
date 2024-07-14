@@ -1,5 +1,4 @@
 defmodule StatWeb.Router do
-  alias StatWeb.UserAuth
   use StatWeb, :router
 
   import StatWeb.UserAuth
@@ -24,19 +23,24 @@ defmodule StatWeb.Router do
     get "/", PageController, :home
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", StatWeb do
-  #   pipe_through :api
-  # end
+  scope "/api" do
+    pipe_through :api
+
+    forward "/graphql", Absinthe.Plug, schema: StatWeb.Schema
+    forward "/graphiql",
+      Absinthe.Plug.GraphiQL,
+      schema: StatWeb.Schema
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview
-    import Phoenix.LiveDashboard.Router
+  import Phoenix.LiveDashboard.Router
 
   scope "/dev" do
-    pipe_through [:browser, :require_authenticated_user, :require_admin]
+    pipe_through [:browser, :require_authenticated_user]
 
     live_dashboard "/dashboard", metrics: StatWeb.Telemetry
     forward "/mailbox", Plug.Swoosh.MailboxPreview
+
   end
 
   ## Authentication routes
@@ -62,56 +66,6 @@ defmodule StatWeb.Router do
     post "/users/log_out", UserSessionController, :delete_mobile
   end
 
-  scope "/api", StatWeb do
-    pipe_through [:api, :require_authenticated_user_api, :fetch_current_user_api]
-
-    get "/posts/weeklycheckin", PostWeeklyCheckInController, :list_weeklycheckin_mobile
-    post "/posts/weeklycheckin", PostWeeklyCheckInController, :create_weeklycheckin_mobile
-    get "/posts/moment", PostMomentController, :list_moment_mobile
-    post "/posts/moment", PostMomentController, :create_moment_mobile
-    get "/posts/weeklycheckin", PostWeeklyCheckInController, :list_weeklycheckin_mobile
-    post "/posts/weeklycheckin", PostWeeklyCheckInController, :create_weeklycheckin_mobile
-    get "/posts/moment", PostMomentController, :list_moment_mobile
-    post "/posts/moment", PostMomentController, :create_moment_mobile
-  end
-
-  scope "/posts/weeklycheckin", StatWeb do
-    pipe_through [:browser, :require_authenticated_user, :fetch_current_user]
-
-    get "/new", PostWeeklyCheckInController, :new
-    post "/", PostWeeklyCheckInController, :create
-    get "/list", PostWeeklyCheckInController, :list
-  end
-
-  scope "/posts/moment", StatWeb do
-    pipe_through [:browser, :require_authenticated_user, :fetch_current_user]
-
-    get "/new", PostMomentController, :new
-    post "/", PostMomentController, :create
-    get "/list", PostMomentController, :list
-  end
-
-  scope "/", StatWeb do
-    pipe_through [:browser, :require_authenticated_user, :fetch_current_user]
-
-    get "/make_admin", AdminController, :create_admin
-  end
-
-  scope "/admin", StatWeb do
-    pipe_through [:browser, :require_authenticated_user, :require_admin]
-
-    get "/", AdminController, :index
-    get "/give_consumables", AdminController, :run_periodic_consumables_scheduler
-  end
-
-  scope "/users", StatWeb do
-    pipe_through [:browser, :require_authenticated_user, :fetch_current_user]
-
-    get "/profile", ProfileController, :show
-    get "/profile/edit", ProfileController, :edit
-    put "/profile", ProfileController, :update
-  end
-
   scope "/", StatWeb do
     pipe_through [:browser, :require_authenticated_user]
 
@@ -128,25 +82,5 @@ defmodule StatWeb.Router do
     post "/users/confirm", UserConfirmationController, :create
     get "/users/confirm/:token", UserConfirmationController, :edit
     post "/users/confirm/:token", UserConfirmationController, :update
-  end
-
-  defp require_admin(conn, _opts) do
-    IO.inspect(Stat.Roles.is_admin?(conn.assigns.current_user.id))
-    if Stat.Roles.is_admin?(conn.assigns.current_user.id) do
-      conn
-    else
-      conn
-      |> put_flash(:error, "You must be an admin to access this page")
-      |> send_resp(404, "Not Found")
-      |> halt()
-    end
-  end
-
-  defp require_authenticated_user_api(conn, _opts) do
-    UserAuth.fetch_api_user(conn, conn.params)
-  end
-
-  defp fetch_current_user_api(conn, opts) do
-    require_authenticated_user_api(conn, opts)
   end
 end
