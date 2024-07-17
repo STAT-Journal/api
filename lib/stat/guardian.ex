@@ -15,14 +15,14 @@ defmodule Stat.Guardian do
   end
 
   def subject_for_token(_, _) do
-    {:error, :reason_for_error}
+    {:error, "Invalid subject"}
   end
 
   def resource_from_claims(%{"sub" => id}) do
     Stat.Accounts.get_user_by_id(id)
   end
 
-  def resource_from_claims(_claims) do
-    {:error, :reason_for_error}
+  def resource_from_claims(_) do
+    {:error, "Invalid claims"}
   end
 end

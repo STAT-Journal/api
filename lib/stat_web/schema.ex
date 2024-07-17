@@ -37,9 +37,30 @@ defmodule StatWeb.Schema do
       resolve &Auths.register/3
     end
 
-    field :profile, :profile do
+    field :create_profile, :profile do
       arg :username, non_null(:string)
+      arg :city_id, :id
       resolve &Users.create_profile/3
+    end
+
+    field :create_text_post, :text_post do
+      arg :body, non_null(:string)
+      resolve &Posts.create_text_post/3
+    end
+
+    field :create_moment, :moment do
+      arg :type, non_null(:string)
+      resolve &Posts.create_moment/3
+    end
+
+    field :create_checkin, :checkin do
+      arg :valence, non_null(:string)
+      resolve &Posts.create_checkin/3
+    end
+
+    field :create_follow, :follow do
+      arg :followed_id, non_null(:id)
+      resolve &Users.create_follow/3
     end
   end
 end

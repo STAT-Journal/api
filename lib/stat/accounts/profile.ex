@@ -8,6 +8,8 @@ defmodule Stat.Accounts.Profile do
     belongs_to :user, Stat.Accounts.User
     belongs_to :city, Stat.Locations.City
 
+    many_to_many :follows, Stat.Accounts.Profile, join_through: "follows"
+
     timestamps(type: :utc_datetime)
   end
 

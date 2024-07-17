@@ -11,9 +11,8 @@ defmodule Stat.Accounts do
 
   @confirmation_token_ttl {30, :minutes}
 
-
   def create_user_confirmation_url(token) do
-    "http://localhost:4000/confirm/#{token}"
+    "http://localhost:4000/confirm/#{token}" # TODO pass domain from config
   end
 
   def create_and_send_user_confirmation_token(user) do
@@ -101,7 +100,6 @@ defmodule Stat.Accounts do
       {:error, _} -> {:error, "Invalid token"}
     end
   end
-
 
   def get_user_by_id(id) do
     User
