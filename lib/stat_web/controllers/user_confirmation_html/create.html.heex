@@ -1,0 +1,24 @@
+<div class="mx-auto max-w-sm">
+    <.simple_form :let={f} for={@changeset}>
+        <.error :if={f.action == :update}>
+            Account has already been confirmed
+        </.error>
+    </.simple_form>
+
+    <%= if !@changeset.errors do %>
+        <div class="alert alert-success">
+            <p>Account confirmed successfully.</p>
+        </div>
+    <% end %>
+
+    <%!-- Sign in prompt --%>
+    <div class="text-center mt-20">
+        <p>
+            <.link navigate={~p"/users/log_in"} class="font-semibold text-brand hover:underline">
+                Log in
+            </.link>
+            to your account now.
+        </p>
+    </div>
+
+</div>

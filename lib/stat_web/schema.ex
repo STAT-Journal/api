@@ -4,6 +4,7 @@ defmodule StatWeb.Schema do
   import_types StatWeb.Schemas.Users
   import_types StatWeb.Schemas.Posts
 
+  alias StatWeb.Resolvers.Users
   alias StatWeb.Resolvers.Posts
   alias StatWeb.Resolvers.Auths
 
@@ -23,6 +24,10 @@ defmodule StatWeb.Schema do
       arg :password, non_null(:string)
       resolve &Auths.login/3
     end
+
+    field :me, :user do
+      resolve &Users.get_user/3
+    end
   end
 
   mutation do
@@ -30,6 +35,11 @@ defmodule StatWeb.Schema do
       arg :email, non_null(:string)
       arg :password, non_null(:string)
       resolve &Auths.register/3
+    end
+
+    field :profile, :profile do
+      arg :username, non_null(:string)
+      resolve &Users.create_profile/3
     end
   end
 end

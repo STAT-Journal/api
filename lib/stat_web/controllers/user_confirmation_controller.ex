@@ -7,10 +7,14 @@ defmodule StatWeb.UserConfirmationController do
     case Accounts.validate_user_confirmation_token(token) do
       {:ok, user} ->
         conn
-        |> redirect(to: "/")
-      {:error, reason} ->
+        |> render(:create, changeset: user)
+      {:decode_error, _reason} ->
         conn
-        |> redirect(to: "/")
+        |> render(:not_found)
+      {:error, changeset} ->
+        IO.inspect(changeset)
+        conn
+        |> render(:create, changeset: changeset)
     end
   end
 end

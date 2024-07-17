@@ -20,10 +20,6 @@ defmodule Stat.Guardian do
 
   def resource_from_claims(%{"sub" => id}) do
     Stat.Accounts.get_user_by_id(id)
-    |> case do
-      nil -> {:error, "User not found"}
-      user -> {:ok, user}
-    end
   end
 
   def resource_from_claims(_claims) do

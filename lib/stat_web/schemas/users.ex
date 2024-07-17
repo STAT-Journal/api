@@ -1,7 +1,7 @@
 defmodule StatWeb.Schemas.Users do
   use Absinthe.Schema.Notation
 
-  object :persona do
+  object :profile do
     field :id, :id
     field :username, :string
   end
@@ -9,7 +9,7 @@ defmodule StatWeb.Schemas.Users do
   object :user do
     field :id, :id
     field :email, :string
-    field :main_persona, :persona
-    field :alt_personas, list_of(:persona)
+    field :main_profile, :profile
+    field :alt_profile, list_of(:profile)
   end
 end

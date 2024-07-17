@@ -1,10 +1,18 @@
 defmodule StatWeb.Resolvers.Users do
-  alias Stat.Users
+  alias Stat.Accounts
 
-  def create_user(_, args, _) do
-    case Users.create_user(args) do
-      {:ok, user} -> {:ok, user}
+  def get_user(_, _, %{current_user: user}) do
+    {:ok, user}
+  end
+
+  def create_profile(_, %{username: username}, %{context: %{current_user: user}}) do
+    case Accounts.create_profile(%{username: username}, user) do
+      {:ok, persona} -> {:ok, persona}
       {:error, changeset} -> {:error, changeset}
     end
+  end
+
+  def create_profile(_, _, _) do
+    {:error, "Please log in first"}
   end
 end

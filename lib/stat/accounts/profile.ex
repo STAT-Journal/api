@@ -15,6 +15,6 @@ defmodule Stat.Accounts.Profile do
   def changeset(profile, attrs) do
     profile
     |> cast(attrs, [:username, :city_id, :user_id])
-    |> validate_required([:username, :city_id, :user_id])
+    |> validate_required([:username])
   end
 end

@@ -7,7 +7,7 @@ defmodule Stat.Accounts do
   alias Stat.Guardian
   import Stat.Queryable
 
-  alias Stat.Accounts.{User, UserNotifier}
+  alias Stat.Accounts.{User, UserNotifier, Profile}
 
   @confirmation_token_ttl {30, :minutes}
 
@@ -49,7 +49,7 @@ defmodule Stat.Accounts do
         |> Guardian.resource_from_claims()
         |> confirm_user()
       {:error, _} ->
-        {:error, "Invalid confirmation token"}
+        {:decode_error, "Invalid token"}
     end
   end
 
@@ -96,17 +96,27 @@ defmodule Stat.Accounts do
   def get_user_by_token(token) do
     case Stat.Guardian.decode_and_verify(token) do
       {:ok, claims} ->
-        User
-        |> where([u], u.id == ^claims["id"])
-        |> Repo.one()
-      {:error, _} ->
-        nil
+        claims
+        |> Stat.Guardian.resource_from_claims()
+      {:error, _} -> {:error, "Invalid token"}
     end
   end
+
 
   def get_user_by_id(id) do
     User
     |> where_id(id)
     |> Repo.one()
+    |> case do
+      nil -> {:error, "User not found"}
+      user -> {:ok, user}
+    end
+  end
+
+  def create_profile(attrs, user) do
+    %Profile{}
+    |> Profile.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:user, user)
+    |> Repo.insert()
   end
 end

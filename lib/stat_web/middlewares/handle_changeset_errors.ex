@@ -6,10 +6,10 @@ defmodule StatWeb.Middlewares.HandleChangesetErrors do
     }
   end
 
-  defp handle_error(%Ecto.Changeset{} = changeset) do
+  def handle_error(%Ecto.Changeset{} = changeset) do
     changeset
       |> Ecto.Changeset.traverse_errors(fn {err, _opts} -> err end)
       |> Enum.map(fn({k,v}) -> "#{k}: #{v}" end)
   end
-  defp handle_error(error), do: [error]
+  def handle_error(error), do: [error]
 end
