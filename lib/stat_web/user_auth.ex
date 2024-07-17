@@ -2,7 +2,6 @@ defmodule StatWeb.UserAuth do
   use StatWeb, :verified_routes
 
   import Plug.Conn
-  import Phoenix.Controller
 
   alias Stat.Accounts
 
@@ -10,8 +9,7 @@ defmodule StatWeb.UserAuth do
     token = Accounts.generate_user_session_token(user)
 
     conn
-    |> put_req_header("authorization", "Bearer #{token}")
-    |> redirect(~p"/webapp")
+    |> put_resp_cookie("token", token, http_only: true, secure: true)
   end
 
   def fetch_user(conn, _opts) do

@@ -21,7 +21,8 @@ defmodule Stat.Application do
       # {Stat.Worker, arg},
       # Start to serve requests, typically the last entry
       Stat.PeriodicConsumablesScheduler,
-      StatWeb.Endpoint
+      StatWeb.Endpoint,
+      # TODO: add sweeper for Guardian DB
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

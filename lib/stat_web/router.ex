@@ -1,16 +1,11 @@
 defmodule StatWeb.Router do
+  alias Stat.Guardian
   use StatWeb, :router
 
-  import StatWeb.UserAuth
-
   pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_live_flash
+    plug :accepts, ["html", "json"]
     plug :put_root_layout, html: {StatWeb.Layouts, :root}
-    plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug :fetch_current_user
   end
 
   pipeline :api do
@@ -36,42 +31,38 @@ defmodule StatWeb.Router do
   import Phoenix.LiveDashboard.Router
 
   scope "/dev" do
-    pipe_through [:browser, :require_authenticated_user]
+    pipe_through [:browser]
 
     live_dashboard "/dashboard", metrics: StatWeb.Telemetry
     forward "/mailbox", Plug.Swoosh.MailboxPreview
 
   end
 
-  ## Authentication routes
+  scope "/verify", StatWeb do
+    pipe_through [:browser]
+
+    get "/:token", UserConfirmationController, :create
+  end
 
   scope "/", StatWeb do
-    pipe_through [:browser, :redirect_if_user_is_authenticated]
+    pipe_through [:browser]
 
     get "/users/register", UserRegistrationController, :new
     post "/users/register", UserRegistrationController, :create
-    get "/users/log_in", UserSessionController, :new
-    post "/users/log_in", UserSessionController, :create
-    get "/users/reset_password", UserResetPasswordController, :new
-    post "/users/reset_password", UserResetPasswordController, :create
-    get "/users/reset_password/:token", UserResetPasswordController, :edit
-    put "/users/reset_password/:token", UserResetPasswordController, :update
-  end
 
-  # Mobile login, logout
-  scope "/api", StatWeb do
-    pipe_through [:api]
-
-    post "/users/log_in", UserSessionController, :create_mobile
-    post "/users/log_out", UserSessionController, :delete_mobile
+    # get "/users/log_in", UserSessionController, :new
+    # post "/users/log_in", UserSessionController, :create
+    # get "/users/reset_password", UserResetPasswordController, :new
+    # post "/users/reset_password", UserResetPasswordController, :create
+    # get "/users/reset_password/:token", UserResetPasswordController, :edit
+    # put "/users/reset_password/:token", UserResetPasswordController, :update
   end
 
   scope "/", StatWeb do
-    pipe_through [:browser, :require_authenticated_user]
+    pipe_through [:browser]
 
     get "/users/settings", UserSettingsController, :edit
     put "/users/settings", UserSettingsController, :update
-    get "/users/settings/confirm_email/:token", UserSettingsController, :confirm_email
   end
 
   scope "/", StatWeb do

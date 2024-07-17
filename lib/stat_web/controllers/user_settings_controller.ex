@@ -23,10 +23,6 @@ defmodule StatWeb.UserSettingsController do
         )
 
         conn
-        |> put_flash(
-          :info,
-          "A link to confirm your email change has been sent to the new address."
-        )
         |> redirect(to: ~p"/users/settings")
 
       {:error, changeset} ->
@@ -41,8 +37,6 @@ defmodule StatWeb.UserSettingsController do
     case Accounts.update_user_password(user, password, user_params) do
       {:ok, user} ->
         conn
-        |> put_flash(:info, "Password updated successfully.")
-        |> put_session(:user_return_to, ~p"/users/settings")
         |> UserAuth.log_in_user(user)
 
       {:error, changeset} ->
@@ -54,12 +48,10 @@ defmodule StatWeb.UserSettingsController do
     case Accounts.update_user_email(conn.assigns.current_user, token) do
       :ok ->
         conn
-        |> put_flash(:info, "Email changed successfully.")
         |> redirect(to: ~p"/users/settings")
 
       :error ->
         conn
-        |> put_flash(:error, "Email change link is invalid or it has expired.")
         |> redirect(to: ~p"/users/settings")
     end
   end

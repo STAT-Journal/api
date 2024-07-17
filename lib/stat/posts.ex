@@ -3,10 +3,13 @@ defmodule Stat.Posts do
   import Stat.Queryable
   import Stat.Mutatable
 
+  alias Stat.Repo
+
   def list_text_posts(user) do
     Stat.Posts.Text
     |> where_user(user)
     |> where_not_deleted()
+    |> Repo.all()
   end
 
   def create_text_post(user, args) do
@@ -17,11 +20,13 @@ defmodule Stat.Posts do
   def list_moments do
     Stat.Posts.Moment
     |> where_not_deleted()
+    |> Repo.all()
   end
 
   def list_moments(user) do
     list_moments()
     |> where_user(user)
+    |> Repo.all()
   end
 
   def create_moment(user, args) do

@@ -125,12 +125,23 @@ defmodule Stat.Accounts.User do
     |> validate_password(opts)
   end
 
+  def is_confirmed(user) do
+    user.confirmed_at != nil
+  end
+
+
   @doc """
   Confirms the account by setting `confirmed_at`.
   """
   def confirm_changeset(user) do
     now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-    change(user, confirmed_at: now)
+    if is_confirmed(user) do
+      change(user)
+      |> add_error(:confirmed_at, "is already confirmed")
+    else
+      user
+      |> change(confirmed_at: now)
+    end
   end
 
   @doc """

@@ -1,21 +1,35 @@
 defmodule StatWeb.Schema do
   use Absinthe.Schema
+  import_types StatWeb.Schemas.Auths
   import_types StatWeb.Schemas.Users
   import_types StatWeb.Schemas.Posts
 
   alias StatWeb.Resolvers.Posts
+  alias StatWeb.Resolvers.Auths
+
+  def middleware(middleware, _field, %{identifier: :mutation}) do
+    middleware ++ [StatWeb.Middlewares.HandleChangesetErrors]
+  end
+
+  def middleware(middleware, _field, _object), do: middleware
 
   query do
     field :list_text_posts, list_of(:text_post) do
       resolve &Posts.list_text_posts/3
     end
+
+    field :login, :auth do
+      arg :email, non_null(:string)
+      arg :password, non_null(:string)
+      resolve &Auths.login/3
+    end
   end
 
   mutation do
-    field :create_user, :user do
+    field :register, :user do
       arg :email, non_null(:string)
       arg :password, non_null(:string)
-      resolve &StatWeb.Resolvers.Users.create_user/3
+      resolve &Auths.register/3
     end
   end
 end

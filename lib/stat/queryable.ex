@@ -11,7 +11,7 @@ defprotocol Stat.Queryable do
 end
 
 
-defimpl Stat.Queryable, for: [Ecto.Schema, Ecto.Query] do
+defimpl Stat.Queryable, for: [Ecto.Schema, Ecto.Query, Atom] do
   require Ecto.Query
 
   def where_deleted(type) do

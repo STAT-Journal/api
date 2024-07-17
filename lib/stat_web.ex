@@ -79,6 +79,14 @@ defmodule StatWeb do
     end
   end
 
+  def json do
+    quote do
+      import Phoenix.Controller, only: [render: 2]
+
+      unquote(verified_routes())
+    end
+  end
+
   defp html_helpers do
     quote do
       # HTML escaping functionality
