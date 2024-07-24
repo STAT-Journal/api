@@ -61,6 +61,9 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# Prevent tokens from being logged in the console
+config :logger, :filter_parameters, ["token"]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
@@ -81,3 +84,6 @@ config :guardian, Guardian.DB,
 config :stat, Stat.PeriodicConsumablesScheduler,
   cron: "0 * * * *", # every hour
   job: {Stat.PeriodicConsumablesScheduler, :run, []}
+
+config :absinthe,
+  schema: StatWeb.Schema

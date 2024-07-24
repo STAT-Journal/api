@@ -5,6 +5,7 @@ defmodule Stat.Consumables.StickerType do
   schema "sticker_types" do
     field :name, :string
     field :url, :string
+    field :price, :integer, default: 1
 
     timestamps(type: :utc_datetime)
   end

@@ -7,6 +7,7 @@ defmodule Stat.Interactions.Sticker do
     belongs_to :user, Stat.Accounts.User
 
     belongs_to :moment, Stat.Posts.Moment
+    belongs_to :checkin, Stat.Posts.Checkin
 
     timestamps(type: :utc_datetime)
   end

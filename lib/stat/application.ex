@@ -20,7 +20,6 @@ defmodule Stat.Application do
       # Start a worker by calling: Stat.Worker.start_link(arg)
       # {Stat.Worker, arg},
       # Start to serve requests, typically the last entry
-      Stat.PeriodicConsumablesScheduler,
       StatWeb.Endpoint,
       # TODO: add sweeper for Guardian DB
     ]

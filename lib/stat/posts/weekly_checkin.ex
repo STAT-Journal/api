@@ -5,34 +5,33 @@ defmodule Stat.Posts.WeeklyCheckIn do
   schema "weekly_check_ins" do
     field :anonymize, :boolean, default: true
     field :valence, Ecto.Enum, values: [:"😞", :"🙁", :"😐", :"🙂", :"😀"], null: false
-    field :year, :integer
-    field :week_number, :integer
 
     belongs_to :user, Stat.Accounts.User
     belongs_to :sticker_type, Stat.Consumables.StickerType # Optional
+    belongs_to :global_weekly_checkin, Stat.Meta.GlobalWeeklyCheckin
 
     timestamps(type: :utc_datetime)
+  end
+
+  def unsafe_changeset(weeklycheckin, attrs) do
+    weeklycheckin
+    |> cast(attrs, [:user_id, :global_weekly_checkin_id])
+    |> unsafe_validate_unique([:user_id, :global_weekly_checkin_id], Stat.Repo, message: "You have already checked in this week")
   end
 
   @doc false
   def changeset(weeklycheckin, attrs) do
     weeklycheckin
-    |> cast(attrs, [:anonymize, :valence, :week_number, :year, :sticker_type_id, :user_id])
+    |> cast(attrs, [
+      :anonymize,
+      :valence,
+      :sticker_type_id,
+      :user_id,
+      :global_weekly_checkin_id])
     |> cast_assoc(:user)
-    |> validate_required([:anonymize, :valence, :week_number, :year, :user_id])
-  end
-
-  def new_weeklycheckin_changeset(weekly_check_in, attrs) do
-    weekly_check_in
-    |> cast(attrs, [:user_id, :week_number, :year])
-    |> cast_assoc(:user)
-    |> validate_required([:user_id, :week_number, :year])
-    |> maybe_validate_unique_weeklycheckin()
-  end
-
-  def maybe_validate_unique_weeklycheckin(weekly_check_in) do
-    weekly_check_in
-    |> unsafe_validate_unique([:user_id, :week_number, :year], Stat.Repo, message: "You have already submitted a weekly checkin for this week")
-    |> unique_constraint([:user_id, :week_number, :year], message: "You have already submitted a weekly checkin for this week")
+    |> cast_assoc(:sticker_type)
+    |> cast_assoc(:global_weekly_checkin)
+    |> validate_required([:anonymize, :valence, :user_id, :global_weekly_checkin_id])
+    |> unique_constraint([:user_id, :global_weekly_checkin_id], message: "You have already checked in this week")
   end
 end

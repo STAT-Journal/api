@@ -1,0 +1,68 @@
+schema {
+  mutation: RootMutationType
+  query: RootQueryType
+}
+
+type Query {
+  me: User
+  verifyRenewalToken(renewalToken: String!): User
+  verifySessionToken(sessionToken: String!): User
+  listTextPosts: [TextPost]
+  unsafeCheckIfUserCanCheckIn: Boolean
+  listTransactions: [Transaction]
+}
+
+type Mutation {
+  register(email: String!, password: String!): User
+  getRenewalFromEmailToken(emailToken: String!): String
+  getRenewalToken(email: String!, password: String!, deviceName: String!): String
+  renewRenewalToken(renewalToken: String!): String
+  getSessionToken(renewalToken: String!): String
+  renewSessionToken(sessionToken: String!): String
+  createProfile(username: String!): Profile
+  createFollow(followedId: ID!): Follow
+  createTextPost(body: String!): TextPost
+  createMoment(type: String!): Moment
+  createWeeklyCheckin(valence: String!): WeeklyCheckIn
+  buySticker(stickerType: ID!): Transaction
+}
+
+type StickerType {
+  name: String
+  url: String
+}
+
+type Transaction {
+  stickerType: StickerType
+  change: Int
+}
+
+type TextPost {
+  body: String
+  user: User
+}
+
+type WeeklyCheckIn {
+  year: Int
+  weekNumber: Int
+}
+
+type Moment {
+  type: String
+  user: User
+}
+
+type Profile {
+  username: String
+}
+
+type User {
+  email: String
+  mainProfile: Profile
+  altProfile: [Profile]
+}
+
+type Follow {
+  follower: Profile
+  followee: Profile
+}

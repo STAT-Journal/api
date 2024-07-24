@@ -63,6 +63,7 @@ defmodule Stat.MixProject do
       {:quantum, "~> 3.0"},
       {:absinthe, "~> 1.7.7"},
       {:absinthe_plug, "~> 1.5"},
+      {:absinthe_relay, "~> 1.5"},
       {:guardian, "~> 2.3.2"},
       {:guardian_db, "~> 3.0.0"},
       {:ueberauth, "~> 0.10"}

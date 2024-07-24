@@ -8,19 +8,20 @@ defmodule Stat.Accounts.UserNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"Stat", "contact@example.com"})
+      |> from({"Glimmring", "registration@glimmr.ing"})
       |> subject(subject)
       |> text_body(body)
 
-    with {:ok, _metadata} <- Mailer.deliver(email) do
-      {:ok, email}
+    case Mailer.deliver(email) do
+      {:ok, _metadata} -> {:ok, email}
+      {:error, reason} -> {:error, reason}
     end
   end
 
   @doc """
   Deliver instructions to confirm account.
   """
-  def deliver_confirmation_instructions(user, url) do
+  def deliver_confirmation_instructions({:ok, user, url}) do
     deliver(user.email, "Confirmation instructions", """
 
     ==============================
@@ -29,13 +30,19 @@ defmodule Stat.Accounts.UserNotifier do
 
     You can confirm your account by visiting the URL below:
 
-    #{url}
+    <a href="#{url}">Sign in here</a>
 
     If you didn't create an account with us, please ignore this.
 
     ==============================
     """)
   end
+
+  def deliver_confirmation_instructions({:error, msg}) do
+    {:error, msg}
+  end
+
+
 
   @doc """
   Deliver instructions to reset a user password.

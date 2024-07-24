@@ -4,17 +4,23 @@ defmodule StatWeb.UserConfirmationController do
   alias Stat.Accounts
 
   def create(conn, %{"token" => token}) do
+    user_agent = conn.req_headers[:useragent]
+    IO.inspect(user_agent)
+
     case Accounts.validate_user_confirmation_token(token) do
-      {:ok, user} ->
+      {:ok, _user} ->
         conn
-        |> render(:create, changeset: user)
-      {:decode_error, _reason} ->
+        |> redirect(to: ~p"/webapp/token")
+
+      {:error, _reason} ->
         conn
-        |> render(:not_found)
-      {:error, changeset} ->
-        IO.inspect(changeset)
-        conn
-        |> render(:create, changeset: changeset)
+        |> redirect(to: ~p"/verify/not_found")
     end
+  end
+
+  def not_found(conn, _params) do
+    conn
+    |> put_status(404)
+    |> render(:not_found)
   end
 end

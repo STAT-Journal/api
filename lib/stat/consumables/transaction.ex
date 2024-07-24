@@ -3,7 +3,7 @@ defmodule Stat.Consumables.Transaction do
   import Ecto.Changeset
 
   schema "transactions" do
-    field :change, :integer # This is the amount of stickers that were added (+ given) or removed (- used)
+    field :currency_change, :integer # Either the cost of a purchase or the amount of currency earned
 
     belongs_to :user, Stat.Accounts.User
     belongs_to :sticker_type, Stat.Consumables.StickerType
@@ -14,7 +14,6 @@ defmodule Stat.Consumables.Transaction do
   @doc false
   def changeset(transaction, attrs) do
     transaction
-    |> cast(attrs, [:change])
-    |> validate_required([:change])
+    |> cast(attrs, [])
   end
 end

@@ -1,4 +1,5 @@
 defmodule Stat.Accounts.Profile do
+  alias Stat.Repo
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -8,8 +9,6 @@ defmodule Stat.Accounts.Profile do
     belongs_to :user, Stat.Accounts.User
     belongs_to :city, Stat.Locations.City
 
-    many_to_many :follows, Stat.Accounts.Profile, join_through: "follows"
-
     timestamps(type: :utc_datetime)
   end
 
@@ -17,6 +16,9 @@ defmodule Stat.Accounts.Profile do
   def changeset(profile, attrs) do
     profile
     |> cast(attrs, [:username, :city_id, :user_id])
-    |> validate_required([:username])
+    |> cast_assoc(:user)
+    |> validate_required([:username], message: "Username is required")
+    |> validate_required(:user_id, message: "User is required")
   end
+
 end
