@@ -85,6 +85,7 @@ defmodule Stat.MixProject do
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["webapp", "tailwind stat", "esbuild stat"],
       "assets.deploy": [
+        "webapp",
         "tailwind stat --minify",
         "esbuild stat --minify",
         "phx.digest"
