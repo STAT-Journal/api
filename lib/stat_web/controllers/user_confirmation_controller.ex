@@ -17,7 +17,7 @@ defmodule StatWeb.UserConfirmationController do
         |> put_resp_cookie("renewal_expiration", result.renewal_expirary, http_only: true, secure: true)
         |> put_resp_cookie("session_token", result.session_token, http_only: true, secure: true)
         |> put_resp_cookie("session_expiration", result.session_expirary, http_only: true, secure: true)
-        |> redirect(external: "http://localhost:5173/webapp/login/token" <> "?" <> redirect_query_params)
+        |> redirect(to: ~p"/webapp/login/token" <> "?" <> redirect_query_params)
 
       {:error, _reason} ->
         conn
