@@ -9,8 +9,15 @@ defmodule StatWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :stat,
-    gzip: false,
+    gzip: true,
     only: StatWeb.static_paths()
+
+  plug StatWeb.WebappPlug
+
+  plug Plug.Static,
+    at: "/webapp",
+    from:  {:stat, "/priv/static/webapp"},
+    gzip: true
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

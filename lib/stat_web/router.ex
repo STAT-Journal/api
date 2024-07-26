@@ -51,10 +51,10 @@ defmodule StatWeb.Router do
     get "/not_found", UserConfirmationController, :not_found
   end
 
-  scope "/webapp", StatWeb do
-    pipe_through [:browser]
+  # scope "/webapp", StatWeb do
+  #   pipe_through [:browser]
 
-    get "/", WebAppController, :index
-    get "/*path", WebAppController, :index
-  end
+  #   get "/", WebAppController, :index
+  #   get "/*path", WebAppController, :index
+  # end
 end
