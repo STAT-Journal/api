@@ -3,12 +3,12 @@ defmodule StatWeb.Schemas.Users do
 
   object :profile do
     field :username, :string
+    field :avatar, :integer
   end
 
   object :user do
     field :email, :string
-    field :main_profile, :profile
-    field :alt_profile, list_of(:profile)
+    field :profile, :profile
   end
 
   object :follow do

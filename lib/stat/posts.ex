@@ -65,14 +65,17 @@ defmodule Stat.Posts do
 
   def list_moments do
     Moment
-    |> where_not_deleted()
     |> Repo.all()
   end
 
   def list_moments(user) do
-    list_moments()
+    {:ok, Moment
     |> where(user_id: ^user.id)
+    |> order_by(desc: :inserted_at)
+    |> limit(10)
     |> Repo.all()
+    |> Enum.map(&Map.put(&1, :inserted_at, DateTime.to_iso8601(&1.inserted_at)))
+    }
   end
 
   def create_moment(args) do

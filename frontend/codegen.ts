@@ -7,8 +7,8 @@ const config: CodegenConfig = {
   documents: "src/gql/**/*.graphql",
   generates: {
     "src/gql/codegen/": {
-      preset: "client",
-      plugins: []
+      preset: 'client',
+      plugins: [],
     }
   }
 };

@@ -41,12 +41,9 @@ export type RootMutationType = {
   createProfile?: Maybe<Profile>;
   createTextPost?: Maybe<TextPost>;
   createWeeklyCheckin?: Maybe<WeeklyCheckIn>;
-  getRenewalFromEmailToken?: Maybe<Scalars['String']['output']>;
-  getRenewalToken?: Maybe<Scalars['String']['output']>;
   getSessionToken?: Maybe<Scalars['String']['output']>;
-  register?: Maybe<User>;
+  register?: Maybe<Scalars['String']['output']>;
   renewRenewalToken?: Maybe<Scalars['String']['output']>;
-  renewSessionToken?: Maybe<Scalars['String']['output']>;
 };
 
 
@@ -80,18 +77,6 @@ export type RootMutationTypeCreateWeeklyCheckinArgs = {
 };
 
 
-export type RootMutationTypeGetRenewalFromEmailTokenArgs = {
-  emailToken: Scalars['String']['input'];
-};
-
-
-export type RootMutationTypeGetRenewalTokenArgs = {
-  deviceName: Scalars['String']['input'];
-  email: Scalars['String']['input'];
-  password: Scalars['String']['input'];
-};
-
-
 export type RootMutationTypeGetSessionTokenArgs = {
   renewalToken: Scalars['String']['input'];
 };
@@ -99,17 +84,11 @@ export type RootMutationTypeGetSessionTokenArgs = {
 
 export type RootMutationTypeRegisterArgs = {
   email: Scalars['String']['input'];
-  password: Scalars['String']['input'];
 };
 
 
 export type RootMutationTypeRenewRenewalTokenArgs = {
   renewalToken: Scalars['String']['input'];
-};
-
-
-export type RootMutationTypeRenewSessionTokenArgs = {
-  sessionToken: Scalars['String']['input'];
 };
 
 export type RootQueryType = {
@@ -163,10 +142,26 @@ export type WeeklyCheckIn = {
   year?: Maybe<Scalars['Int']['output']>;
 };
 
-export type TestQueryVariables = Exact<{ [key: string]: never; }>;
+export type RegisterWithEmailMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+}>;
 
 
-export type TestQuery = { __typename?: 'RootQueryType', me?: { __typename?: 'User', email?: string | null } | null };
+export type RegisterWithEmailMutation = { __typename?: 'RootMutationType', register?: string | null };
+
+export type GetSessionTokenMutationVariables = Exact<{
+  renewalToken: Scalars['String']['input'];
+}>;
 
 
-export const TestDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"test"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<TestQuery, TestQueryVariables>;
+export type GetSessionTokenMutation = { __typename?: 'RootMutationType', getSessionToken?: string | null };
+
+export type MyEmailQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MyEmailQuery = { __typename?: 'RootQueryType', me?: { __typename?: 'User', email?: string | null } | null };
+
+
+export const RegisterWithEmailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"registerWithEmail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"register"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}}]}]}}]} as unknown as DocumentNode<RegisterWithEmailMutation, RegisterWithEmailMutationVariables>;
+export const GetSessionTokenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"getSessionToken"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"renewalToken"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getSessionToken"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"renewalToken"},"value":{"kind":"Variable","name":{"kind":"Name","value":"renewalToken"}}}]}]}}]} as unknown as DocumentNode<GetSessionTokenMutation, GetSessionTokenMutationVariables>;
+export const MyEmailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"myEmail"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<MyEmailQuery, MyEmailQueryVariables>;

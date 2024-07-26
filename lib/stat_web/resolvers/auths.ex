@@ -47,13 +47,6 @@ defmodule StatWeb.Resolvers.Auths do
     end
   end
 
-  def refresh_session_token(_, %{session_token: session_token}, _) do
-    case Accounts.refresh_user_session_token(session_token) do
-      {:ok, token} -> {:ok, token}
-      {:error, _} -> {:error, "Invalid session token"}
-    end
-  end
-
   def register(_, %{email: email}, _) do
     Accounts.send_email_signin(email)
   end

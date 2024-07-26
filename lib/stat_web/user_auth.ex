@@ -35,7 +35,7 @@ defmodule StatWeb.UserAuth do
 
   def fetch_user(conn, _opts) do
     with ["Bearer " <> token] <- fetch_token(conn) do
-      user = Accounts.get_user_by_token(token)
+      user = Accounts.get_user_by_token(token, "session")
       user
     else
       _ -> {:error, "No token found"}

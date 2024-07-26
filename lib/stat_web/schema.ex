@@ -20,11 +20,6 @@ defmodule StatWeb.Schema do
   end
 
   query do
-    # User-related queries
-    field :me, :user do
-      resolve &Users.get_user/3
-    end
-
     field :verify_renewal_token, :user do
       arg :renewal_token, non_null(:string)
       resolve &Auths.check_renewal_token/3
@@ -33,6 +28,11 @@ defmodule StatWeb.Schema do
     field :verify_session_token, :user do
       arg :session_token, non_null(:string)
       resolve &Auths.check_session_token/3
+    end
+
+    # User-related queries
+    field :me, :user do
+      resolve &Users.get_user/3
     end
 
     # Post-related queries
@@ -44,29 +44,33 @@ defmodule StatWeb.Schema do
       resolve &Posts.unsafe_check_if_user_can_check_in/3
     end
 
+    field :list_moments, list_of(:moment) do
+      resolve &Posts.list_moments/3
+    end
+
     # Consumable-related queries
     field :list_transactions, list_of(:transaction) do
       resolve &Consumables.list_transactions/3
     end
-
+    100
   end
 
   mutation do
+    field :dev_get_session_token, :string do
+      resolve fn _, _, _ ->
+        user = Stat.Accounts.User |> Ecto.Query.first |> Stat.Repo.one
+        Stat.Guardian.encode_and_sign(user, %{type: "session"}) |>
+        case do
+          {:ok, token, _} -> {:ok, token}
+          {:error, msg} -> {:error, msg}
+        end
+      end
+    end
+
     # Auth-related mutations
     field :register, :string do
       arg :email, non_null(:string)
       resolve &Auths.register/3
-    end
-
-    field :get_renewal_from_email_token, :string do
-      arg :email_token, non_null(:string)
-    end
-
-    field :get_renewal_token, :string do
-      arg :email, non_null(:string)
-      arg :password, non_null(:string)
-      arg :device_name, non_null(:string)
-      resolve &Auths.retrieve_renewal_token/3
     end
 
     field :renew_renewal_token, :string do
@@ -79,14 +83,10 @@ defmodule StatWeb.Schema do
       resolve &Auths.get_session_token/3
     end
 
-    field :renew_session_token, :string do
-      arg :session_token, non_null(:string)
-      resolve &Auths.refresh_session_token/3
-    end
-
     # User-related mutations
     field :create_profile, :profile do
       arg :username, non_null(:string)
+      arg :avatar, :integer
       resolve &Users.create_profile/3
     end
 
@@ -102,7 +102,7 @@ defmodule StatWeb.Schema do
     end
 
     field :create_moment, :moment do
-      arg :type, non_null(:string)
+      arg :type, non_null(:moment_type)
       resolve &Posts.create_moment/3
     end
 

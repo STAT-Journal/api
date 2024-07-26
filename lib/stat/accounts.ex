@@ -11,13 +11,12 @@ defmodule Stat.Accounts do
   alias Stat.Consumables.{Balance}
   alias Stat.Accounts.{User, UserNotifier, Profile, Follow}
 
-  @renewal_token_ttl {1, :months} # Stored by clients and used to renew session tokens
+  @renewal_token_ttl {4, :weeks} # Stored by clients and used to renew session tokens
   @session_token_ttl {3, :hours} # Used to authenticate requests
   @confirmation_token_ttl {30, :minutes} # Used to confirm user email
 
 
-  @spec create_user_confirmation_url({:error, any(), any()} | {:ok, any(), any(), any()}) ::
-          {:error, <<_::624>>} | {:ok, any(), <<_::64, _::_*8>>}
+
   def create_user_confirmation_url({:ok, token, _, user}) do
     {:ok, user, StatWeb.Endpoint.url() <> "/verify?token=#{token}"}
   end
@@ -29,26 +28,23 @@ defmodule Stat.Accounts do
   def encode_and_sign_confirmation_token(user) do
     user
     |> Guardian.encode_and_sign(%{type: "confirmation"}, ttl: @confirmation_token_ttl)
-    |> Tuple.append(user)
   end
 
   def encode_and_sign_renewal_token(user) do
     user
     |> Guardian.encode_and_sign(%{type: "renewal"}, ttl: @renewal_token_ttl)
-    |> Tuple.append(user)
   end
 
   def encode_and_sign_session_token(user) do
     user
     |> Guardian.encode_and_sign(%{type: "session"}, ttl: @session_token_ttl)
-    |> Tuple.append(user)
   end
 
-  @spec send_user_confirmation_email({:error, any()} | {:ok, any()}) ::
-          {:error, any()} | {:ok, Swoosh.Email.t()}
+
   def send_user_confirmation_email({:ok, user}) do
     user
     |> encode_and_sign_confirmation_token()
+    |> Tuple.append(user)
     |> create_user_confirmation_url()
     |> UserNotifier.deliver_confirmation_instructions()
   end
@@ -76,6 +72,8 @@ defmodule Stat.Accounts do
     {:error, msg}
   end
 
+  @spec handle_confirm_result({:error, any()} | {:ok, any()}, any()) ::
+          {:error, any()} | {:ok, any()}
   def handle_confirm_result({:ok, msg}, token) do
     Guardian.revoke(token)
     |> case do
@@ -89,13 +87,40 @@ defmodule Stat.Accounts do
   end
 
   def validate_user_confirmation_token(token) do
+    user = token |> get_user_by_token()
     Guardian.decode_and_verify(token, %{type: "confirmation"})
     |> confirm_user()
     |> handle_confirm_result(token)
+    user
   end
 
-  def fetch_user_signin_tokens(user) do
+  def fetch_user_signin_tokens({:ok, user}) do
+    renewal_result = user |> encode_and_sign_renewal_token()
+    session_result = user |> encode_and_sign_session_token()
 
+    case {renewal_result, session_result} do
+      {{:ok, renewal_token, renewal_claims}, {:ok, session_token, session_claims}} ->
+        renewal_expirary = renewal_claims |> Map.get("exp")
+        session_expirary = session_claims |> Map.get("exp")
+        {:ok, %{
+          renewal_token: renewal_token,
+          renewal_expirary: renewal_expirary,
+          session_token: session_token,
+          session_expirary: session_expirary
+        }}
+      {{:error, msg}, _} -> {:error, msg}
+      {_, _} -> {:error, "Unknown error"}
+    end
+  end
+
+  def fetch_user_signin_tokens({:error, msg}) do
+    {:error, msg}
+  end
+
+  def sign_in_user_by_token(token) do
+    token
+    |> validate_user_confirmation_token()
+    |> fetch_user_signin_tokens()
   end
 
   def handle_user_confirmation(token) do
@@ -170,15 +195,6 @@ defmodule Stat.Accounts do
     end
   end
 
-  def refresh_user_session_token(token) do
-    token
-    |> Guardian.decode_and_verify(%{type: "session"})
-    |> case do
-      {:ok, _} -> Guardian.refresh(token, ttl: @session_token_ttl)
-      {:error, _} -> {:error, "Invalid token"}
-    end
-  end
-
   def get_session_token_from_renewal_token(token) do
     case Stat.Guardian.decode_and_verify(token, %{type: "renewal"}) do
       {:ok, claims} ->
@@ -221,10 +237,10 @@ defmodule Stat.Accounts do
     end
   end
 
-  def create_profile(attrs) do
-    %Profile{}
+  def create_profile(attrs, user) do
+    user
+    |> Ecto.build_assoc(:profile)
     |> Profile.changeset(attrs)
-    |> Repo.insert()
   end
 
   def get_profile(id) do
@@ -234,6 +250,17 @@ defmodule Stat.Accounts do
     |> case do
       nil -> {:error, "Profile not found"}
       profile -> {:ok, profile}
+    end
+  end
+
+  def get_main_profile(user) do
+    User
+    |> where(id: ^user.id)
+    |> Repo.preload(:main_profile)
+    |> Repo.one()
+    |> case do
+      nil -> {:ok, nil}
+      user -> {:ok, user.main_profile}
     end
   end
 

@@ -11,8 +11,13 @@ defmodule StatWeb.Schemas.Posts do
     field :week_number, :integer
   end
 
+  enum :moment_type do
+    value :good
+    value :bad
+  end
+
   object :moment do
-    field :type, :string
-    field :user, :user
+    field :type, :moment_type
+    field :inserted_at, :string # ISO8601
   end
 end

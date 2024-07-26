@@ -21,7 +21,8 @@ defmodule Stat.Repo.Migrations.Users do
 
     create table(:profiles) do
       add :username, :string, null: false
-      add :city_id, references(:cities, on_delete: :delete_all)
+      add :avatar, :integer, null: false
+      # add :city_id, references(:cities, on_delete: :delete_all)
       add :user_id, references(:users, on_delete: :delete_all), null: false
       timestamps(type: :utc_datetime)
     end

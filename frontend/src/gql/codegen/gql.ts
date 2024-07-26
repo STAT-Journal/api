@@ -13,7 +13,9 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "query test {\n  me {\n    email\n  }\n}": types.TestDocument,
+    "mutation registerWithEmail($email: String!) {\n  register(email: $email)\n}": types.RegisterWithEmailDocument,
+    "mutation getSessionToken($renewalToken: String!) {\n  getSessionToken(renewalToken: $renewalToken)\n}": types.GetSessionTokenDocument,
+    "query myEmail {\n  me {\n    email\n  }\n}": types.MyEmailDocument,
 };
 
 /**
@@ -33,7 +35,15 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "query test {\n  me {\n    email\n  }\n}"): (typeof documents)["query test {\n  me {\n    email\n  }\n}"];
+export function graphql(source: "mutation registerWithEmail($email: String!) {\n  register(email: $email)\n}"): (typeof documents)["mutation registerWithEmail($email: String!) {\n  register(email: $email)\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "mutation getSessionToken($renewalToken: String!) {\n  getSessionToken(renewalToken: $renewalToken)\n}"): (typeof documents)["mutation getSessionToken($renewalToken: String!) {\n  getSessionToken(renewalToken: $renewalToken)\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "query myEmail {\n  me {\n    email\n  }\n}"): (typeof documents)["query myEmail {\n  me {\n    email\n  }\n}"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

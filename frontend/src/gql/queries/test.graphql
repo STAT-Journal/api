@@ -1,5 +1,0 @@
-query test {
-  me {
-    email
-  }
-}

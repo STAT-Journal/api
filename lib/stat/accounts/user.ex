@@ -11,6 +11,7 @@ defmodule Stat.Accounts.User do
     has_many :moments, Stat.Posts.Moment
     has_many :texts, Stat.Posts.Text
     has_many :transactions, Stat.Consumables.Transaction
+    has_one :profile, Stat.Accounts.Profile
 
     timestamps(type: :utc_datetime)
   end

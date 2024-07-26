@@ -1,13 +1,12 @@
 defmodule Stat.Accounts.Profile do
-  alias Stat.Repo
   use Ecto.Schema
   import Ecto.Changeset
 
   schema "profiles" do
     field :username, :string
+    field :avatar, :integer
 
     belongs_to :user, Stat.Accounts.User
-    belongs_to :city, Stat.Locations.City
 
     timestamps(type: :utc_datetime)
   end
@@ -15,10 +14,11 @@ defmodule Stat.Accounts.Profile do
   @doc false
   def changeset(profile, attrs) do
     profile
-    |> cast(attrs, [:username, :city_id, :user_id])
+    |> cast(attrs, [:username, :avatar])
     |> cast_assoc(:user)
+    |> assoc_constraint(:user)
     |> validate_required([:username], message: "Username is required")
-    |> validate_required(:user_id, message: "User is required")
+    |> validate_required([:avatar], message: "Avatar is required")
   end
 
 end
