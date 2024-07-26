@@ -1,5 +1,4 @@
-import { Card, Carousel } from "flowbite-react";
-import { createAvatar, Style, schema } from '@dicebear/core';
+import { createAvatar, Style } from '@dicebear/core';
 import { toPng, Result } from "@dicebear/converter";
 import * as collection from '@dicebear/collection';
 import { useEffect, useState } from "react";

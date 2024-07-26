@@ -7,11 +7,11 @@ import Router from './routes/Router';
 
 async function authExchangeConfiguration(utils: AuthUtilities): Promise<AuthConfig> {
   let sessionToken = localStorage.getItem('sessionToken');
-  let sessionTokenExpiryEpoch = localStorage.getItem('sessionTokenExpiry');
-  let sessionTokenExpiry = new Date(sessionTokenExpiryEpoch || 0);
+  // let sessionTokenExpiryEpoch = localStorage.getItem('sessionTokenExpiry');
+  // let sessionTokenExpiry = new Date(sessionTokenExpiryEpoch || 0);
   let renewalToken = localStorage.getItem('renewalToken');
-  let renewalTokenExpiryEpoch = localStorage.getItem('renewalTokenExpiry');
-  let renewalTokenExpiry = new Date(renewalTokenExpiryEpoch || 0);
+  // let renewalTokenExpiryEpoch = localStorage.getItem('renewalTokenExpiry');
+  // let renewalTokenExpiry = new Date(renewalTokenExpiryEpoch || 0);
 
 
   return {
