@@ -83,7 +83,7 @@ defmodule Stat.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind stat", "esbuild stat"],
+      "assets.build": ["webapp", "tailwind stat", "esbuild stat"],
       "assets.deploy": [
         "tailwind stat --minify",
         "esbuild stat --minify",
