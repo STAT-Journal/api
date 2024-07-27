@@ -1,11 +1,8 @@
 defmodule StatWeb.Router do
-  alias Stat.Guardian
-  import StatWeb.Middlewares.FetchTokenFromQuery
   use StatWeb, :router
 
   pipeline :browser do
     plug :accepts, ["html"]
-    plug :put_root_layout, html: {StatWeb.Layouts, :root}
     plug :put_secure_browser_headers
   end
 
@@ -51,10 +48,10 @@ defmodule StatWeb.Router do
     get "/not_found", UserConfirmationController, :not_found
   end
 
-  # scope "/webapp", StatWeb do
-  #   pipe_through [:browser]
+  scope "/webapp", StatWeb do
+    pipe_through [:browser]
 
-  #   get "/", WebAppController, :index
-  #   get "/*path", WebAppController, :index
-  # end
+    get "/", WebAppController, :index
+    get "*path", WebAppController, :index
+  end
 end
