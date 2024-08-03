@@ -1,4 +1,4 @@
-query {
+query listMoments {
     listMoments{
         type
         insertedAt

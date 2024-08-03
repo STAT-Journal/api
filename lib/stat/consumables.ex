@@ -45,7 +45,7 @@ defmodule Stat.Consumables do
 
   def list_transactions(user) do
     Transaction
-    |> where(user_id: ^user)
+    |> where(user: ^user)
     |> order_by(desc: :inserted_at)
     |> Repo.all()
   end

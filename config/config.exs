@@ -19,8 +19,7 @@ config :stat, StatWeb.Endpoint,
     formats: [html: StatWeb.ErrorHTML, json: StatWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: Stat.PubSub,
-  live_view: [signing_salt: "fCcVZXCB"]
+  pubsub_server: Stat.PubSub
 
 # Configures the mailer
 #

@@ -1,0 +1,10 @@
+mutation exchangeRefreshForAccessToken($refreshToken: String!) {
+  exchangeRefreshForAccessToken(refreshToken: $refreshToken) {
+    token
+    claims {
+        sub
+        exp
+        iat
+    }
+  }
+}

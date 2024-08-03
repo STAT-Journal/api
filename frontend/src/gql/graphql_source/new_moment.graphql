@@ -1,0 +1,7 @@
+mutation createMoment($type: MomentType!) {
+  createMoment(type: $type)
+  {
+	insertedAt
+    type
+  }
+}

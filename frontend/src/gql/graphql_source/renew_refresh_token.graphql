@@ -1,0 +1,11 @@
+mutation renewRefreshToken($refreshToken: String!) {
+  renewRefreshToken(refreshToken: $refreshToken) {
+    token
+    claims {
+        sub
+        exp
+        iat
+    }
+  }
+}
+

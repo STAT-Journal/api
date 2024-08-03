@@ -21,7 +21,9 @@ defmodule Stat.Application do
       # {Stat.Worker, arg},
       # Start to serve requests, typically the last entry
       StatWeb.Endpoint,
-      # TODO: add sweeper for Guardian DB
+      # TODO: add sweeper for Guardian DB,
+
+      {Absinthe.Subscription, StatWeb.Endpoint}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

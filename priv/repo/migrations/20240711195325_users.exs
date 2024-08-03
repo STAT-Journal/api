@@ -3,6 +3,7 @@ defmodule Stat.Repo.Migrations.Users do
 
   def change do
     create table(:users) do
+      add :username, :string
       add :email, :string, null: false, collate: :nocase
       add :last_confirmed_at, :utc_datetime
       timestamps(type: :utc_datetime)
@@ -16,14 +17,6 @@ defmodule Stat.Repo.Migrations.Users do
       add :latitude, :float, null: false
       add :country, :string, null: false
 
-      timestamps(type: :utc_datetime)
-    end
-
-    create table(:profiles) do
-      add :username, :string, null: false
-      add :avatar, :integer, null: false
-      # add :city_id, references(:cities, on_delete: :delete_all)
-      add :user_id, references(:users, on_delete: :delete_all), null: false
       timestamps(type: :utc_datetime)
     end
   end

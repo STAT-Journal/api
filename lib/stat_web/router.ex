@@ -1,8 +1,20 @@
 defmodule StatWeb.Router do
   use StatWeb, :router
+  use Kaffy.Routes, scope: "/admin"
+
+  pipeline :kaffy_browser do
+    plug :accepts, ["html", "json"]
+    plug :fetch_session
+    plug :fetch_flash
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+  end
+
 
   pipeline :browser do
     plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_flash
     plug :put_secure_browser_headers
   end
 
@@ -54,4 +66,6 @@ defmodule StatWeb.Router do
     get "/", WebAppController, :index
     get "*path", WebAppController, :index
   end
+
+
 end

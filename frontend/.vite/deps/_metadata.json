@@ -15,12 +15,6 @@
       "file": "react-dom_client.js",
       "fileHash": "01340d2d",
       "needsInterop": true
-    },
-    "flowbite-react": {
-      "src": "../../node_modules/flowbite-react/dist/esm/index.mjs",
-      "file": "flowbite-react.js",
-      "fileHash": "a62ca265",
-      "needsInterop": false
     }
   },
   "chunks": {

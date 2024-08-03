@@ -1,0 +1,6 @@
+query listTextPosts {
+  listTextPosts {
+    body
+    insertedAt
+  }
+}

@@ -1,4 +1,5 @@
 defmodule StatWeb.Endpoint do
+  use Absinthe.Phoenix.Endpoint
   use Phoenix.Endpoint, otp_app: :stat
 
 
@@ -17,6 +18,16 @@ defmodule StatWeb.Endpoint do
     at: "/webapp",
     from: {:stat, "priv/static/webapp"},
     gzip: true
+
+  plug Plug.Static,
+    at: "/kaffy", # or "/path/to/your/static/kaffy"
+    from: :kaffy,
+    gzip: false,
+    only: ~w(assets)
+
+  socket "/socket", StatWeb.UserSocket,
+    websocket: true,
+    longpoll: true
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
@@ -43,5 +54,11 @@ defmodule StatWeb.Endpoint do
 
   plug Plug.MethodOverride
   plug Plug.Head
-  plug StatWeb.Router
+  plug Plug.Session,
+    store: :cookie,
+    key: "_stat_key",
+    signing_salt: "fCcVZXCB" # TODO: Change this to something secure
+  plug StatWeb.Router,
+
+  pubsub_server: Stat.PubSub
 end

@@ -1,8 +1,9 @@
 defmodule StatWeb.Resolvers.Consumables do
   alias Stat.Consumables
+  alias Stat.Resolvers.Auths
 
-  def list_transactions(_, _, %{context: %{current_user: user}}) do
-    Consumables.list_transactions(user.id)
+  def list_transactions(_, _, %{context: %{current_user: user, current_user_type: "session"}}) do
+    Consumables.list_transactions(user)
   end
 
   def get_balance(_, _, %{context: %{current_user: user}}) do

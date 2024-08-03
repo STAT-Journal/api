@@ -22,10 +22,11 @@ defmodule Stat.Posts do
   end
 
   def list_text_posts(user) do
-    Text
+    {:ok, Text
     |> where(user_id: ^user.id)
     |> where_not_deleted()
-    |> Repo.all()
+    |> order_by(desc: :inserted_at)
+    |> Repo.all() }
   end
 
   def list_deleted_text_posts(user) do

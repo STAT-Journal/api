@@ -50,6 +50,3 @@ Enum.to_list(1..10)
   })
   |> Repo.insert!()
 end)
-
-IO.inspect(user_one)
-IO.inspect(user_two)

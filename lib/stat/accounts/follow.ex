@@ -3,8 +3,8 @@ defmodule Stat.Accounts.Follow do
   import Ecto.Changeset
 
   schema "follows" do
-    belongs_to :follower, Stat.Accounts.Profile
-    belongs_to :followed, Stat.Accounts.Profile
+    belongs_to :follower, Stat.Accounts.User
+    belongs_to :followed, Stat.Accounts.User
   end
 
   def validate_follow_ids(changeset) do

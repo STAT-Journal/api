@@ -1,6 +1,12 @@
 query myProfile {
   me{
     email
-    profile
+    public {
+      avatar {
+        options
+        style
+      }
+      username
+    }
   }
 }

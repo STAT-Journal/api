@@ -2,20 +2,17 @@ defmodule Stat.Accounts do
   @moduledoc """
   The Accounts context.
   """
-  import Ecto.Query, warn: false
-  alias Stat.Consumables.Balance
+  import Ecto.Query
   alias Ecto.Multi
   alias Stat.Repo
   alias Stat.Guardian
 
-  alias Stat.Consumables.{Balance}
-  alias Stat.Accounts.{User, UserNotifier, Profile, Follow}
+  alias Stat.Accounts.{Avatar, User, UserNotifier, Follow}
 
-  @renewal_token_ttl {4, :weeks} # Stored by clients and used to renew session tokens
-  @session_token_ttl {3, :hours} # Used to authenticate requests
+  @refresh_token_ttl {4, :weeks} # Stored by clients and used to renew access tokens
+  @access_token_ttl {3, :hours} # Used to authenticate requests
   @confirmation_token_ttl {30, :minutes} # Used to confirm user email
-
-
+  @default_follow_token_ttl {2, :days}
 
   def create_user_confirmation_url({:ok, token, _, user}) do
     {:ok, user, StatWeb.Endpoint.url() <> "/verify?token=#{token}"}
@@ -27,17 +24,26 @@ defmodule Stat.Accounts do
 
   def encode_and_sign_confirmation_token(user) do
     user
-    |> Guardian.encode_and_sign(%{type: "confirmation"}, ttl: @confirmation_token_ttl)
+    |> Guardian.encode_and_sign(%{}, token_type: "confirmation", ttl: @confirmation_token_ttl)
   end
 
-  def encode_and_sign_renewal_token(user) do
+  def encode_and_sign_refresh_token(user) do
     user
-    |> Guardian.encode_and_sign(%{type: "renewal"}, ttl: @renewal_token_ttl)
+    |> Guardian.encode_and_sign(%{}, token_type: "refresh", ttl: @refresh_token_ttl)
   end
 
-  def encode_and_sign_session_token(user) do
+  def encode_and_sign_access_token(user) do
     user
-    |> Guardian.encode_and_sign(%{type: "session"}, ttl: @session_token_ttl)
+    |> Guardian.encode_and_sign(%{}, token_type: "access", ttl: @access_token_ttl)
+  end
+
+  def exchange_refresh_for_access_token(refresh_token) do
+    Guardian.exchange(refresh_token, "refresh", "access", ttl: @access_token_ttl)
+    |> case do
+      {:ok, _, {token, claims}} ->
+        {:ok, %{token: token, claims: claims}}
+      {:error, error} -> {:error, error}
+    end
   end
 
 
@@ -58,22 +64,22 @@ defmodule Stat.Accounts do
     |> User.confirm_changeset()
     |> Repo.update()
     |> case do
-      {:ok, user} -> {:ok, "User confirmed at #{user.last_confirmed_at}"}
-      {:error, changeset} -> {:confirm_error, changeset}
+      {:ok, user} -> {:ok, "#{user.email} confirmed at #{user.last_confirmed_at}"}
+      {:error, changeset} -> {:error, changeset}
     end
   end
 
   def confirm_user({:ok, claims}) do
-    Guardian.resource_from_claims(claims)
+    user = Guardian.resource_from_claims(claims)
+    user
     |> confirm_user()
+    user
   end
 
   def confirm_user({:error, msg}) do
     {:error, msg}
   end
 
-  @spec handle_confirm_result({:error, any()} | {:ok, any()}, any()) ::
-          {:error, any()} | {:ok, any()}
   def handle_confirm_result({:ok, msg}, token) do
     Guardian.revoke(token)
     |> case do
@@ -87,34 +93,24 @@ defmodule Stat.Accounts do
   end
 
   def validate_user_confirmation_token(token) do
-    user = token |> get_user_by_token()
-    Guardian.decode_and_verify(token, %{type: "confirmation"})
+    Guardian.decode_and_verify(token, %{}, token_type: "confirmation")
     |> confirm_user()
-    |> handle_confirm_result(token)
-    user
   end
 
   def fetch_user_signin_tokens({:ok, user}) do
-    renewal_result = user |> encode_and_sign_renewal_token()
-    session_result = user |> encode_and_sign_session_token()
-
-    case {renewal_result, session_result} do
-      {{:ok, renewal_token, renewal_claims}, {:ok, session_token, session_claims}} ->
-        renewal_expirary = renewal_claims |> Map.get("exp")
-        session_expirary = session_claims |> Map.get("exp")
-        {:ok, %{
-          renewal_token: renewal_token,
-          renewal_expirary: renewal_expirary,
-          session_token: session_token,
-          session_expirary: session_expirary
-        }}
-      {{:error, msg}, _} -> {:error, msg}
-      {_, _} -> {:error, "Unknown error"}
-    end
+    user
+    |> encode_and_sign_refresh_token()
   end
 
   def fetch_user_signin_tokens({:error, msg}) do
     {:error, msg}
+  end
+
+  def new_auth_blob(refresh_token) do
+    refresh_token
+    |> Guardian.decode_and_verify(%{}, token_type: "refresh")
+    |> get_user_by_claims()
+    |> fetch_user_signin_tokens()
   end
 
   def sign_in_user_by_token(token) do
@@ -160,14 +156,16 @@ defmodule Stat.Accounts do
     end
   end
 
-  def revoke_renewal_token(token) do
-    Guardian.decode_and_verify(token, %{type: "renewal"})
+  def renew_refresh_token(token) do
+    Guardian.refresh(token, token_type: "refresh", ttl: @refresh_token_ttl)
     |> case do
-      {:ok, _} ->
-        Guardian.revoke(token)
-      {:error, _} ->
-        {:error, "Invalid token"}
+      {:ok, {token, claims}, _} -> {:ok, %{token: token, claims: claims}}
+      {:error, error} -> {:error, error}
     end
+  end
+
+  def revoke_refresh_token(token) do
+    Guardian.revoke(token, token_type: "refresh")
   end
 
   def create_follow(attrs) do
@@ -186,36 +184,34 @@ defmodule Stat.Accounts do
     end
   end
 
-  def refresh_user_renewal_token(token) do
-    token
-    |> Guardian.decode_and_verify(%{type: "renewal"})
-    |> case do
-      {:ok, _} -> Guardian.refresh(token, ttl: @renewal_token_ttl)
-      {:error, _} -> {:error, "Invalid token"}
-    end
-  end
-
-  def get_session_token_from_renewal_token(token) do
-    case Stat.Guardian.decode_and_verify(token, %{type: "renewal"}) do
-      {:ok, claims} ->
-        claims
-        |> Stat.Guardian.resource_from_claims()
-        |> encode_and_sign_session_token()
-      {:error, _} -> {:error, "Invalid token"}
-    end
-  end
-
-  def revoke_user_session_token(token) do
+  def revoke_user_access_token(token) do
     Stat.Guardian.revoke(token)
   end
 
+  def get_user_by_claims({:ok, claims}) do
+    claims
+    |> Stat.Guardian.resource_from_claims()
+  end
+
+  def get_user_by_claims({:error, _}) do
+    {:error, "Invalid token"}
+  end
+
+  def renew_refresh_token(token) do
+    Stat.Guardian.refresh(token, type: "refresh")
+  end
+
   def get_user_by_token(token, type) do
-    case Stat.Guardian.decode_and_verify(token, %{type: type}) do
+    case Stat.Guardian.decode_and_verify(token, %{}, token_type: type) do
       {:ok, claims} ->
         claims
         |> Stat.Guardian.resource_from_claims()
       {:error, _} -> {:error, "Invalid token"}
     end
+  end
+
+  def get_user_by_token(nil, _) do
+    {:error, "No token found"}
   end
 
   def get_user_by_token(token) do
@@ -227,9 +223,10 @@ defmodule Stat.Accounts do
     end
   end
 
-  def get_user_by_id(id) do
+  def get_user_by_id(id, preload \\ []) do
     User
     |> where(id: ^id)
+    |> Repo.preload(preload)
     |> Repo.one()
     |> case do
       nil -> {:error, "User not found"}
@@ -237,40 +234,30 @@ defmodule Stat.Accounts do
     end
   end
 
-  def create_profile(attrs, user) do
+  def add_username(attrs, user) do
     user
-    |> Ecto.build_assoc(:profile)
-    |> Profile.changeset(attrs)
-  end
-
-  def get_profile(id) do
-    Profile
-    |> where(id: ^id)
-    |> Repo.one()
+    |> User.username_changeset(attrs)
     |> case do
-      nil -> {:error, "Profile not found"}
-      profile -> {:ok, profile}
+      {:error, _} -> {:error, "Username already set"}
+      changeset -> Repo.update(changeset)
     end
   end
 
-  def get_main_profile(user) do
+  def add_avatar(attrs, user) do
+    user
+    |> Ecto.build_assoc(:avatar)
+    |> Avatar.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def get_user_with_avatar(user) do
+    avatar = Avatar |> where([a], a.user_id == ^user.id) |> limit(1) |> Repo.one()
     User
-    |> where(id: ^user.id)
-    |> Repo.preload(:main_profile)
+    |> where([u], u.id == ^user.id)
     |> Repo.one()
     |> case do
-      nil -> {:ok, nil}
-      user -> {:ok, user.main_profile}
-    end
-  end
-
-  def user_owns_profile(profile_id, user) do
-    Profile
-    |> where([p], p.id == ^profile_id and p.user_id == ^user.id)
-    |> Repo.one()
-    |> case do
-      nil -> {:error, "Profile not found"}
-      profile -> {:ok, profile}
+      nil -> {:error, "User not found"}
+      user -> {:ok, Map.put(user, :public, %{avatar: avatar, username: user.username})}
     end
   end
 end

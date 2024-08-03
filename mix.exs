@@ -32,13 +32,15 @@ defmodule Stat.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:kaffy, "~> 0.10.0"},
+      {:browser, "~> 0.5.4"},
       {:bcrypt_elixir, "~> 3.0"},
       {:phoenix, "~> 1.7.12"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0"},
       {:ecto_sqlite3, ">= 0.0.0"},
-      {:phoenix_html, "~> 4.0"},
+      {:phoenix_html, "~> 3.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.20.2"},
       {:floki, ">= 0.30.0", only: :test},
@@ -54,6 +56,7 @@ defmodule Stat.MixProject do
        depth: 1},
       {:swoosh, "~> 1.5"},
       {:finch, "~> 0.13"},
+      {:req, "~> 0.5.0"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
@@ -62,6 +65,7 @@ defmodule Stat.MixProject do
       {:bandit, "~> 1.2"},
       {:quantum, "~> 3.0"},
       {:absinthe, "~> 1.7.7"},
+      {:absinthe_phoenix, "~> 2.0"},
       {:absinthe_plug, "~> 1.5"},
       {:absinthe_relay, "~> 1.5"},
       {:guardian, "~> 2.3.2"},

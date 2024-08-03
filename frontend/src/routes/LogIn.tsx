@@ -1,4 +1,4 @@
-import { Button, Label, TextInput, Toast } from "flowbite-react"
+import { Button, Input } from "antd"
 import { useState } from "react";
 import { useOutlet } from "react-router-dom";
 import { graphql }  from '../gql/codegen';
@@ -25,7 +25,6 @@ export function LogIn() {
     const setEmail = (email: string) => {
         let oldState = emailState
         setEmailState({ ...oldState, email: email });
-        console.log(emailState);
     }
 
     const setEmailValidation = (email: string) => {
@@ -42,9 +41,7 @@ export function LogIn() {
     const [_, executeMutation] = useMutation(mutation);
 
     function loginWithEmail(email: string) {
-    
-        console.log("Logging in with email: " + email);
-    
+  
         return executeMutation({ email: email })
         .then((result) => {
             if (result.error) {
@@ -65,23 +62,18 @@ export function LogIn() {
 
     return (
         <div className="flex-row space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <TextInput 
+            <Input 
                 id="email" 
                 type="email"
                 placeholder="name@email.com" 
                 required 
                 color={emailState.color}
-                helperText={emailState.helperText}
                 onChange={(e) => setEmail(e.target.value)}
                 onBlur={(e) => setEmailValidation(e.target.value)}
             />
             <Button onClick={() => loginWithEmail(emailState.email)}>Sign in with email</Button>
             <div className="text-center">
                 Enter your email and we'll send you a link to sign in.
-            </div>
-            <div style={{ display: toastState.hidden ? "none" : "block" }}>
-                <Toast {...toastState}>{toastState.message}</Toast>
             </div>
             {outlet}
         </div>

@@ -5,38 +5,33 @@ defmodule StatWeb.Schema do
   import_types StatWeb.Schemas.Users
   import_types StatWeb.Schemas.Posts
   import_types StatWeb.Schemas.Consumables
+  import_types StatWeb.Schemas.Mosaics
+  import_types StatWeb.Schemas.Broadcasts
+  import_types StatWeb.Schemas.Presences
 
   alias StatWeb.Resolvers.Users
   alias StatWeb.Resolvers.Posts
   alias StatWeb.Resolvers.Auths
   alias StatWeb.Resolvers.Consumables
+  alias StatWeb.Resolvers.Mosaics
+  alias StatWeb.Resolvers.Presences
 
   def middleware(middleware, _field, %{identifier: :mutation}) do
-    middleware ++ [StatWeb.Middlewares.HandleChangesetErrors]
+    [StatWeb.Middlewares.HandleAuth] ++ middleware ++ [StatWeb.Middlewares.HandleChangesetErrors]
   end
 
   def middleware(middleware, _field, _object) do
-    middleware ++ [StatWeb.Middlewares.HandleBadAuth]
+    [StatWeb.Middlewares.HandleAuth] ++ middleware
   end
 
   query do
-    field :verify_renewal_token, :user do
-      arg :renewal_token, non_null(:string)
-      resolve &Auths.check_renewal_token/3
-    end
-
-    field :verify_session_token, :user do
-      arg :session_token, non_null(:string)
-      resolve &Auths.check_session_token/3
-    end
-
     # User-related queries
-    field :me, :user do
+    field :me, :private_user do
       resolve &Users.get_user/3
     end
 
     # Post-related queries
-    field :list_text_posts, list_of(:text_post) do
+    field :list_text_posts, non_null(list_of(non_null(:text_post))) do
       resolve &Posts.list_text_posts/3
     end
 
@@ -44,50 +39,43 @@ defmodule StatWeb.Schema do
       resolve &Posts.unsafe_check_if_user_can_check_in/3
     end
 
-    field :list_moments, list_of(:moment) do
+    field :list_moments, non_null(list_of(:moment)) do
       resolve &Posts.list_moments/3
     end
 
     # Consumable-related queries
-    field :list_transactions, list_of(:transaction) do
+    field :list_transactions, non_null(list_of(:transaction)) do
       resolve &Consumables.list_transactions/3
     end
-    100
+
   end
 
   mutation do
-    field :dev_get_session_token, :string do
-      resolve fn _, _, _ ->
-        user = Stat.Accounts.User |> Ecto.Query.first |> Stat.Repo.one
-        Stat.Guardian.encode_and_sign(user, %{type: "session"}) |>
-        case do
-          {:ok, token, _} -> {:ok, token}
-          {:error, msg} -> {:error, msg}
-        end
-      end
-    end
-
     # Auth-related mutations
     field :register, :string do
       arg :email, non_null(:string)
       resolve &Auths.register/3
     end
 
-    field :renew_renewal_token, :string do
-      arg :renewal_token, non_null(:string)
-      resolve &Auths.refresh_renewal_token/3
+    field :renew_refresh_token, :auth_blob do
+      arg :refresh_token, non_null(:string)
+      resolve &Auths.renew_refresh_token/3
     end
 
-    field :get_session_token, :string do
-      arg :renewal_token, non_null(:string)
-      resolve &Auths.get_session_token/3
+    field :exchange_refresh_for_access_token, :auth_blob do
+      arg :refresh_token, non_null(:string)
+      resolve &Auths.exchange_refresh_for_access_token/3
     end
 
     # User-related mutations
-    field :create_profile, :profile do
+    field :add_username, :public_user do
       arg :username, non_null(:string)
-      arg :avatar, :integer
-      resolve &Users.create_profile/3
+      resolve &Users.add_username/3
+    end
+
+    field :add_avatar, :public_user do
+      arg :avatar, non_null(:avatar_input)
+      resolve &Users.add_avatar/3
     end
 
     field :create_follow, :follow do
@@ -111,10 +99,30 @@ defmodule StatWeb.Schema do
       resolve &Posts.create_weekly_checkin/3
     end
 
-    # Consumable-related mutations
-    field :buy_sticker, :transaction do
-      arg :sticker_type, non_null(:id)
-      resolve &Consumables.buy_sticker/3
+    # Subscription utilties
+    field :create_prescence, non_null(:string) do
+      arg :presence, non_null(:presence)
+      resolve &Presences.presence/3
+    end
+
+    # Mosiac-related mutations
+    field :participate_in_mosaic, :mosaic do
+      arg :mosaic_participation, non_null(:mosaic_participation)
+      resolve &Mosaic.participate_in_mosaic/3
+    end
+  end
+
+  subscription do
+    field :mosaic_circle, :mosaic do
+      config fn _args, _info ->
+        {:ok, topic: "mosaic_circle"}
+      end
+    end
+
+    field :broadcasts, :broadcast do
+      config fn _args, _info ->
+        {:ok, topic: "broadcasts"}
+      end
     end
   end
 end

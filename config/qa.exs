@@ -70,3 +70,6 @@ config :phoenix_live_view,
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
+
+config :stat, Stat.Accounts,
+  mobile_redirect_base: "exp://10.0.0.222" # TODO: change to app dev scheme

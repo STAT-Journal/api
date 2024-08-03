@@ -3,23 +3,51 @@ defmodule StatWeb.UserConfirmationController do
 
   alias Stat.Accounts
 
+  def mobile_redirect_base do
+    Application.get_env(:stat, StatWeb.UserConfirmationController)[:mobile_redirect_base]
+  end
+
+  def desktop_redirect_base do
+    Application.get_env(:stat, StatWeb.UserConfirmationController)[:desktop_redirect_base]
+    || ~p"/webapp/login/token"
+  end
+
+  def redirect_to_signin(conn = %{assigns: %{useragent_type: :mobile}}, redirect_query_params) do
+    conn
+    |> redirect(external: mobile_redirect_base() <> "?" <> redirect_query_params)
+  end
+
+
+  def redirect_to_signin(conn = %{assigns: %{useragent_type: :desktop}}, redirect_query_params) do
+    case desktop_redirect_base() do
+      path = "http" <> _ ->
+        conn
+        |> redirect(external: path <> "?" <> redirect_query_params)
+      path ->
+        conn
+        |> redirect(to: path <> "?" <> redirect_query_params)
+    end
+  end
+
+  def redirect_to_signin({conn, _, _}) do
+    conn
+    |> redirect(to: ~p"/verify/not_found")
+  end
+
+  def fetch_useragent_type(conn) do
+    conn
+    |> assign(:useragent_type, Browser.device_type(conn))
+  end
+
   def create(conn, %{"token" => token}) do
     case Accounts.sign_in_user_by_token(token) do
-      {:ok, result} ->
-        redirect_query_params = URI.encode_query(%{
-          renewal_token: result.renewal_token,
-          renewal_expiration: result.renewal_expirary,
-          session_token: result.session_token,
-          session_expiration: result.session_expirary
-        })
+      {:ok, token, claims} ->
+        {:ok, claims_json} = Jason.encode(claims)
+        redirect_query_params = URI.encode_query(%{"token" => token, "claims" => claims_json})
         conn
-        |> put_resp_cookie("renewal_token", result.renewal_token, http_only: true, secure: true)
-        |> put_resp_cookie("renewal_expiration", result.renewal_expirary, http_only: true, secure: true)
-        |> put_resp_cookie("session_token", result.session_token, http_only: true, secure: true)
-        |> put_resp_cookie("session_expiration", result.session_expirary, http_only: true, secure: true)
-        |> redirect(to: ~p"/webapp/login/token" <> "?" <> redirect_query_params)
-
-      {:error, _reason} ->
+        |> fetch_useragent_type()
+        |> redirect_to_signin(redirect_query_params)
+      {:error, _msg} ->
         conn
         |> redirect(to: ~p"/verify/not_found")
     end

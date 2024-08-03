@@ -27,6 +27,7 @@ defimpl Stat.Queryable, for: [Ecto.Schema, Ecto.Query, Atom] do
     |> Ecto.Query.where([p], p.user_id == ^user.id)
   end
 
+  @spec prefetch_user(any()) :: Ecto.Query.t()
   def prefetch_user(type) do
     type
     |> Ecto.Query.preload(:user)

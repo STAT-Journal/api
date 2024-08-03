@@ -2,8 +2,8 @@ defmodule StatWeb.Schemas.Posts do
   use Absinthe.Schema.Notation
 
   object :text_post do
-    field :body, :string
-    field :user, :user
+    field :body, non_null(:string)
+    field :inserted_at, non_null(:string) # ISO8601
   end
 
   object :weekly_check_in do
@@ -17,7 +17,7 @@ defmodule StatWeb.Schemas.Posts do
   end
 
   object :moment do
-    field :type, :moment_type
-    field :inserted_at, :string # ISO8601
+    field :type, non_null(:moment_type)
+    field :inserted_at, non_null(:string) # ISO8601
   end
 end

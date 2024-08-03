@@ -16,39 +16,99 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type AuthBlob = {
+  __typename?: 'AuthBlob';
+  claims: Claims;
+  token: Scalars['String']['output'];
+};
+
+export type Avatar = {
+  __typename?: 'Avatar';
+  options?: Maybe<Scalars['String']['output']>;
+  style?: Maybe<Scalars['String']['output']>;
+};
+
+export type AvatarInput = {
+  options?: InputMaybe<Scalars['String']['input']>;
+  style?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Broadcast = {
+  __typename?: 'Broadcast';
+  id?: Maybe<Scalars['ID']['output']>;
+  message?: Maybe<Scalars['String']['output']>;
+};
+
+export type Claims = {
+  __typename?: 'Claims';
+  exp: Scalars['Int']['output'];
+  iat: Scalars['Int']['output'];
+  sub: Scalars['String']['output'];
+};
+
 export type Follow = {
   __typename?: 'Follow';
-  followee?: Maybe<Profile>;
-  follower?: Maybe<Profile>;
+  followee?: Maybe<PublicUser>;
+  follower?: Maybe<PublicUser>;
 };
 
 export type Moment = {
   __typename?: 'Moment';
-  type?: Maybe<Scalars['String']['output']>;
-  user?: Maybe<User>;
+  insertedAt: Scalars['String']['output'];
+  type: MomentType;
 };
 
-export type Profile = {
-  __typename?: 'Profile';
+export enum MomentType {
+  Bad = 'BAD',
+  Good = 'GOOD'
+}
+
+export type Mosaic = {
+  __typename?: 'Mosaic';
+  createdAt?: Maybe<Scalars['Int']['output']>;
+  endsAt?: Maybe<Scalars['Int']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  size?: Maybe<Scalars['Int']['output']>;
+};
+
+export type MosaicParticipation = {
+  mosaicId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type PrivateUser = {
+  __typename?: 'PrivateUser';
+  email?: Maybe<Scalars['String']['output']>;
+  public?: Maybe<PublicUser>;
+};
+
+export type PublicUser = {
+  __typename?: 'PublicUser';
+  avatar?: Maybe<Avatar>;
   username?: Maybe<Scalars['String']['output']>;
 };
 
 export type RootMutationType = {
   __typename?: 'RootMutationType';
-  buySticker?: Maybe<Transaction>;
+  addAvatar?: Maybe<PublicUser>;
+  addUsername?: Maybe<PublicUser>;
   createFollow?: Maybe<Follow>;
   createMoment?: Maybe<Moment>;
-  createProfile?: Maybe<Profile>;
   createTextPost?: Maybe<TextPost>;
   createWeeklyCheckin?: Maybe<WeeklyCheckIn>;
-  getSessionToken?: Maybe<Scalars['String']['output']>;
+  exchangeRefreshForAccessToken?: Maybe<AuthBlob>;
+  participateInMosaic?: Maybe<Mosaic>;
   register?: Maybe<Scalars['String']['output']>;
-  renewRenewalToken?: Maybe<Scalars['String']['output']>;
+  renewRefreshToken?: Maybe<AuthBlob>;
 };
 
 
-export type RootMutationTypeBuyStickerArgs = {
-  stickerType: Scalars['ID']['input'];
+export type RootMutationTypeAddAvatarArgs = {
+  avatar: AvatarInput;
+};
+
+
+export type RootMutationTypeAddUsernameArgs = {
+  username: Scalars['String']['input'];
 };
 
 
@@ -58,12 +118,7 @@ export type RootMutationTypeCreateFollowArgs = {
 
 
 export type RootMutationTypeCreateMomentArgs = {
-  type: Scalars['String']['input'];
-};
-
-
-export type RootMutationTypeCreateProfileArgs = {
-  username: Scalars['String']['input'];
+  type: MomentType;
 };
 
 
@@ -77,8 +132,13 @@ export type RootMutationTypeCreateWeeklyCheckinArgs = {
 };
 
 
-export type RootMutationTypeGetSessionTokenArgs = {
-  renewalToken: Scalars['String']['input'];
+export type RootMutationTypeExchangeRefreshForAccessTokenArgs = {
+  refreshToken: Scalars['String']['input'];
+};
+
+
+export type RootMutationTypeParticipateInMosaicArgs = {
+  mosaicParticipation: MosaicParticipation;
 };
 
 
@@ -87,28 +147,23 @@ export type RootMutationTypeRegisterArgs = {
 };
 
 
-export type RootMutationTypeRenewRenewalTokenArgs = {
-  renewalToken: Scalars['String']['input'];
+export type RootMutationTypeRenewRefreshTokenArgs = {
+  refreshToken: Scalars['String']['input'];
 };
 
 export type RootQueryType = {
   __typename?: 'RootQueryType';
-  listTextPosts?: Maybe<Array<Maybe<TextPost>>>;
-  listTransactions?: Maybe<Array<Maybe<Transaction>>>;
-  me?: Maybe<User>;
+  listMoments: Array<Maybe<Moment>>;
+  listTextPosts: Array<TextPost>;
+  listTransactions: Array<Maybe<Transaction>>;
+  me?: Maybe<PrivateUser>;
   unsafeCheckIfUserCanCheckIn?: Maybe<Scalars['Boolean']['output']>;
-  verifyRenewalToken?: Maybe<User>;
-  verifySessionToken?: Maybe<User>;
 };
 
-
-export type RootQueryTypeVerifyRenewalTokenArgs = {
-  renewalToken: Scalars['String']['input'];
-};
-
-
-export type RootQueryTypeVerifySessionTokenArgs = {
-  sessionToken: Scalars['String']['input'];
+export type RootSubscriptionType = {
+  __typename?: 'RootSubscriptionType';
+  broadcasts?: Maybe<Broadcast>;
+  mosaicCircle?: Maybe<Mosaic>;
 };
 
 export type StickerType = {
@@ -119,8 +174,8 @@ export type StickerType = {
 
 export type TextPost = {
   __typename?: 'TextPost';
-  body?: Maybe<Scalars['String']['output']>;
-  user?: Maybe<User>;
+  body: Scalars['String']['output'];
+  insertedAt: Scalars['String']['output'];
 };
 
 export type Transaction = {
@@ -129,18 +184,49 @@ export type Transaction = {
   stickerType?: Maybe<StickerType>;
 };
 
-export type User = {
-  __typename?: 'User';
-  altProfile?: Maybe<Array<Maybe<Profile>>>;
-  email?: Maybe<Scalars['String']['output']>;
-  mainProfile?: Maybe<Profile>;
-};
-
 export type WeeklyCheckIn = {
   __typename?: 'WeeklyCheckIn';
   weekNumber?: Maybe<Scalars['Int']['output']>;
   year?: Maybe<Scalars['Int']['output']>;
 };
+
+export type AddAvatarMutationVariables = Exact<{
+  avatar: AvatarInput;
+}>;
+
+
+export type AddAvatarMutation = { __typename?: 'RootMutationType', addAvatar?: { __typename?: 'PublicUser', avatar?: { __typename?: 'Avatar', options?: string | null, style?: string | null } | null } | null };
+
+export type ExchangeRefreshForAccessTokenMutationVariables = Exact<{
+  refreshToken: Scalars['String']['input'];
+}>;
+
+
+export type ExchangeRefreshForAccessTokenMutation = { __typename?: 'RootMutationType', exchangeRefreshForAccessToken?: { __typename?: 'AuthBlob', token: string, claims: { __typename?: 'Claims', sub: string, exp: number, iat: number } } | null };
+
+export type ListTextPostsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListTextPostsQuery = { __typename?: 'RootQueryType', listTextPosts: Array<{ __typename?: 'TextPost', body: string, insertedAt: string }> };
+
+export type ListMomentsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListMomentsQuery = { __typename?: 'RootQueryType', listMoments: Array<{ __typename?: 'Moment', type: MomentType, insertedAt: string } | null> };
+
+export type CreateMomentMutationVariables = Exact<{
+  type: MomentType;
+}>;
+
+
+export type CreateMomentMutation = { __typename?: 'RootMutationType', createMoment?: { __typename?: 'Moment', insertedAt: string, type: MomentType } | null };
+
+export type CreateTextPostMutationVariables = Exact<{
+  body: Scalars['String']['input'];
+}>;
+
+
+export type CreateTextPostMutation = { __typename?: 'RootMutationType', createTextPost?: { __typename?: 'TextPost', body: string } | null };
 
 export type RegisterWithEmailMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -149,19 +235,33 @@ export type RegisterWithEmailMutationVariables = Exact<{
 
 export type RegisterWithEmailMutation = { __typename?: 'RootMutationType', register?: string | null };
 
-export type GetSessionTokenMutationVariables = Exact<{
-  renewalToken: Scalars['String']['input'];
+export type RenewRefreshTokenMutationVariables = Exact<{
+  refreshToken: Scalars['String']['input'];
 }>;
 
 
-export type GetSessionTokenMutation = { __typename?: 'RootMutationType', getSessionToken?: string | null };
+export type RenewRefreshTokenMutation = { __typename?: 'RootMutationType', renewRefreshToken?: { __typename?: 'AuthBlob', token: string, claims: { __typename?: 'Claims', sub: string, exp: number, iat: number } } | null };
 
-export type MyEmailQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type MyEmailQuery = { __typename?: 'RootQueryType', me?: { __typename?: 'User', email?: string | null } | null };
+export type MyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
+export type MyProfileQuery = { __typename?: 'RootQueryType', me?: { __typename?: 'PrivateUser', email?: string | null, public?: { __typename?: 'PublicUser', username?: string | null, avatar?: { __typename?: 'Avatar', options?: string | null, style?: string | null } | null } | null } | null };
+
+export type AddUsernameMutationVariables = Exact<{
+  username: Scalars['String']['input'];
+}>;
+
+
+export type AddUsernameMutation = { __typename?: 'RootMutationType', addUsername?: { __typename?: 'PublicUser', username?: string | null } | null };
+
+
+export const AddAvatarDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"addAvatar"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"avatar"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AvatarInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addAvatar"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"avatar"},"value":{"kind":"Variable","name":{"kind":"Name","value":"avatar"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options"}},{"kind":"Field","name":{"kind":"Name","value":"style"}}]}}]}}]}}]} as unknown as DocumentNode<AddAvatarMutation, AddAvatarMutationVariables>;
+export const ExchangeRefreshForAccessTokenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"exchangeRefreshForAccessToken"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"refreshToken"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"exchangeRefreshForAccessToken"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"refreshToken"},"value":{"kind":"Variable","name":{"kind":"Name","value":"refreshToken"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"claims"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sub"}},{"kind":"Field","name":{"kind":"Name","value":"exp"}},{"kind":"Field","name":{"kind":"Name","value":"iat"}}]}}]}}]}}]} as unknown as DocumentNode<ExchangeRefreshForAccessTokenMutation, ExchangeRefreshForAccessTokenMutationVariables>;
+export const ListTextPostsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"listTextPosts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listTextPosts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"insertedAt"}}]}}]}}]} as unknown as DocumentNode<ListTextPostsQuery, ListTextPostsQueryVariables>;
+export const ListMomentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"listMoments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listMoments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"insertedAt"}}]}}]}}]} as unknown as DocumentNode<ListMomentsQuery, ListMomentsQueryVariables>;
+export const CreateMomentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createMoment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"type"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"MomentType"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createMoment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"Variable","name":{"kind":"Name","value":"type"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertedAt"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<CreateMomentMutation, CreateMomentMutationVariables>;
+export const CreateTextPostDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createTextPost"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"body"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTextPost"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"body"},"value":{"kind":"Variable","name":{"kind":"Name","value":"body"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"body"}}]}}]}}]} as unknown as DocumentNode<CreateTextPostMutation, CreateTextPostMutationVariables>;
 export const RegisterWithEmailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"registerWithEmail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"register"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}}]}]}}]} as unknown as DocumentNode<RegisterWithEmailMutation, RegisterWithEmailMutationVariables>;
-export const GetSessionTokenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"getSessionToken"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"renewalToken"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getSessionToken"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"renewalToken"},"value":{"kind":"Variable","name":{"kind":"Name","value":"renewalToken"}}}]}]}}]} as unknown as DocumentNode<GetSessionTokenMutation, GetSessionTokenMutationVariables>;
-export const MyEmailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"myEmail"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<MyEmailQuery, MyEmailQueryVariables>;
+export const RenewRefreshTokenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"renewRefreshToken"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"refreshToken"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"renewRefreshToken"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"refreshToken"},"value":{"kind":"Variable","name":{"kind":"Name","value":"refreshToken"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"claims"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sub"}},{"kind":"Field","name":{"kind":"Name","value":"exp"}},{"kind":"Field","name":{"kind":"Name","value":"iat"}}]}}]}}]}}]} as unknown as DocumentNode<RenewRefreshTokenMutation, RenewRefreshTokenMutationVariables>;
+export const MyProfileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"myProfile"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"public"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options"}},{"kind":"Field","name":{"kind":"Name","value":"style"}}]}},{"kind":"Field","name":{"kind":"Name","value":"username"}}]}}]}}]}}]} as unknown as DocumentNode<MyProfileQuery, MyProfileQueryVariables>;
+export const AddUsernameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"addUsername"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"username"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addUsername"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"username"},"value":{"kind":"Variable","name":{"kind":"Name","value":"username"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"username"}}]}}]}}]} as unknown as DocumentNode<AddUsernameMutation, AddUsernameMutationVariables>;

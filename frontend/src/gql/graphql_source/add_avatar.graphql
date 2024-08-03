@@ -1,0 +1,8 @@
+mutation addAvatar($avatar: AvatarInput!) {
+  addAvatar(avatar: $avatar) {
+    avatar {
+      options
+      style
+    }
+  }
+}
