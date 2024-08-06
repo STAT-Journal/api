@@ -9,12 +9,38 @@ defmodule StatWeb.Resolvers.Users do
     {:error, "Please log in first"}
   end
 
-  def create_follow(_, %{followed_id: followed_id}, %{context: %{current_user: user}}) do
-    args = %{followed_id: followed_id, follower_id: user.id}
-    case Accounts.create_follow(args) do
-      {:ok, follow} -> {:ok, follow}
-      {:error, changeset} -> {:error, changeset}
-    end
+  def get_follow_token(_, _, %{context: %{current_user: user}}) do
+    Accounts.get_follow_token(user)
+  end
+
+  def get_follow_token(_, _, _) do
+    {:error, "Please log in first"}
+  end
+
+  def create_follow(_, %{follow_token: follow_token}, %{context: %{current_user: user}}) do
+    Accounts.create_follow(follow_token, user)
+  end
+
+  def create_follow(_, _, _) do
+    {:error, "Please log in first"}
+  end
+
+  def get_followers(_, _, %{context: %{current_user: user}}) do
+    result = Stat.Accounts.get_followers(user)
+    IO.inspect(result)
+    result
+  end
+
+  def get_followers(_, _, _) do
+    {:error, "Please log in first"}
+  end
+
+  def get_following(_, _, %{context: %{current_user: user}}) do
+    Accounts.get_following(user)
+  end
+
+  def get_following(_, _, _) do
+    {:error, "Please log in first"}
   end
 
   def add_username(_, %{username: username}, %{context: %{current_user: user}}) do

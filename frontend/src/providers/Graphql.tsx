@@ -1,6 +1,6 @@
 import { AuthConfig, authExchange, AuthUtilities } from "@urql/exchange-auth";
 import { AuthBlob } from "../gql/codegen/graphql";
-import { cacheExchange, Client, CombinedError, fetchExchange, Operation, OperationResult, Provider, subscriptionExchange } from "urql";
+import { cacheExchange, Client, CombinedError, fetchExchange, Operation, OperationResult, Provider } from "urql";
 import { useRefreshData } from "./AuthDataStorage";
 import { graphql } from "../gql/codegen";
 import { SelectionNode } from "graphql";
@@ -15,7 +15,7 @@ export function GraphqlProvider({ children }: { children: React.ReactNode }) {
     const refreshData = refreshDataContext.authData;
     const setRefreshData = refreshDataContext.setAuthData;
     const [phoenixSocket, setPhoenixSocket] = useState<PhoenixSocket | null>(null);
-    const [absintheSocket, setAbsintheSocket] = useState<withAbsintheSocket.AbsintheSocket | null>(null);
+    const [_absintheSocket, setAbsintheSocket] = useState<withAbsintheSocket.AbsintheSocket | null>(null);
     const [accessData, setAccessData] = useState<AuthBlob | null>(null);
 
     const phoenixSockeWsUrl = window.location.origin.replace(/^http/, 'ws') + '/socket';

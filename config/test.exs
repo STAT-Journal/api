@@ -35,3 +35,19 @@ config :phoenix, :plug_init_mode, :runtime
 config :phoenix_live_view,
   # Enable helpful, but potentially expensive runtime checks
   enable_expensive_runtime_checks: true
+
+config :stat, Stat.Guardian,
+issuer: "stat",
+secret_key: "toTw7maGff2I7Bj14oMx0ryAga6qUxg34un6IhUadKN7tkL/NRHr2RwZ6F3bkqdp",
+token_ttl: %{
+  "access" => {30, :minutes},
+  "refresh" => {30, :days},
+  "confirmation" => {1, :day}
+},
+serializer: Jason,
+token_verify_module: Guardian.Token.Jwt.Verify,
+allowed_algos: ["HS512"],
+auth_claim: true
+
+config :stat, Stat.GuardianCachex,
+  name: :stat_guardian_cache

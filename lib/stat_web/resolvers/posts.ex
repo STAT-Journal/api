@@ -31,6 +31,17 @@ defmodule StatWeb.Resolvers.Posts do
     {:error, "Please log in first"}
   end
 
+  def list_moments_for_graph(_, _, %{context: %{current_user: user}}) do
+    case Posts.list_moments_for_graph(user) do
+      {:ok, moments} -> {:ok, moments}
+      {:error, _} -> {:error, "Error fetching moments"}
+    end
+  end
+
+  def list_moments_for_graph(_, _, _) do
+    {:error, "Please log in first"}
+  end
+
   def update_text_post(_, %{id: id, body: body}, %{context: %{current_user: user}}) do
     args = %{id: id, body: body, user_id: user.id}
     case Posts.update_text_post(args) do

@@ -13,6 +13,7 @@ defmodule Stat.DataCase do
   by setting `use Stat.DataCase, async: true`, although
   this option is not recommended for other databases.
   """
+alias Hex.Netrc.Cache
 
   use ExUnit.CaseTemplate
 
@@ -36,8 +37,19 @@ defmodule Stat.DataCase do
   Sets up the sandbox based on the test tags.
   """
   def setup_sandbox(tags) do
-    pid = Ecto.Adapters.SQL.Sandbox.start_owner!(Stat.Repo, shared: not tags[:async])
-    on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
+    cachex_opts = Application.get_env(:stat, Stat.GuardianCachex)
+
+    processes = [
+      { Ecto.Adapters.SQL.Sandbox.start_owner!(Stat.Repo, shared: not tags[:async]),
+        &Ecto.Adapters.SQL.Sandbox.stop_owner/1 },
+      { Cachex.start_link(cachex_opts),
+        fn _pid -> nil end },
+    ]
+
+    on_exit(fn ->
+      processes
+      |> Enum.map(fn {pid, stop} -> stop.(pid) end)
+    end)
   end
 
   @doc """

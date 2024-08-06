@@ -15,8 +15,10 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
 const documents = {
     "mutation addAvatar($avatar: AvatarInput!) {\n  addAvatar(avatar: $avatar) {\n    avatar {\n      options\n      style\n    }\n  }\n}": types.AddAvatarDocument,
     "mutation exchangeRefreshForAccessToken($refreshToken: String!) {\n  exchangeRefreshForAccessToken(refreshToken: $refreshToken) {\n    token\n    claims {\n      sub\n      exp\n      iat\n    }\n  }\n}": types.ExchangeRefreshForAccessTokenDocument,
+    "query getFollowToken {\n  getFollowToken\n}": types.GetFollowTokenDocument,
+    "query getFollowersAndFollowing {\n  getFollowers {\n    avatar {\n      options\n      style\n    }\n    username\n  }\n  getFollowing {\n    avatar {\n      options\n      style\n    }\n    username\n  }\n}": types.GetFollowersAndFollowingDocument,
     "query listTextPosts {\n  listTextPosts {\n    body\n    insertedAt\n  }\n}": types.ListTextPostsDocument,
-    "query listMoments {\n  listMoments {\n    type\n    insertedAt\n  }\n}": types.ListMomentsDocument,
+    "query listMomentsForGraph {\n  listMomentsForGraph {\n    good\n    bad\n    insertedAt\n  }\n}": types.ListMomentsForGraphDocument,
     "mutation createMoment($type: MomentType!) {\n  createMoment(type: $type) {\n    insertedAt\n    type\n  }\n}": types.CreateMomentDocument,
     "mutation createTextPost($body: String!) {\n  createTextPost(body: $body) {\n    body\n  }\n}": types.CreateTextPostDocument,
     "mutation registerWithEmail($email: String!) {\n  register(email: $email)\n}": types.RegisterWithEmailDocument,
@@ -50,11 +52,19 @@ export function graphql(source: "mutation exchangeRefreshForAccessToken($refresh
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "query getFollowToken {\n  getFollowToken\n}"): (typeof documents)["query getFollowToken {\n  getFollowToken\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "query getFollowersAndFollowing {\n  getFollowers {\n    avatar {\n      options\n      style\n    }\n    username\n  }\n  getFollowing {\n    avatar {\n      options\n      style\n    }\n    username\n  }\n}"): (typeof documents)["query getFollowersAndFollowing {\n  getFollowers {\n    avatar {\n      options\n      style\n    }\n    username\n  }\n  getFollowing {\n    avatar {\n      options\n      style\n    }\n    username\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "query listTextPosts {\n  listTextPosts {\n    body\n    insertedAt\n  }\n}"): (typeof documents)["query listTextPosts {\n  listTextPosts {\n    body\n    insertedAt\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "query listMoments {\n  listMoments {\n    type\n    insertedAt\n  }\n}"): (typeof documents)["query listMoments {\n  listMoments {\n    type\n    insertedAt\n  }\n}"];
+export function graphql(source: "query listMomentsForGraph {\n  listMomentsForGraph {\n    good\n    bad\n    insertedAt\n  }\n}"): (typeof documents)["query listMomentsForGraph {\n  listMomentsForGraph {\n    good\n    bad\n    insertedAt\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -5,6 +5,8 @@ defmodule Stat.Accounts.Follow do
   schema "follows" do
     belongs_to :follower, Stat.Accounts.User
     belongs_to :followed, Stat.Accounts.User
+
+    timestamps()
   end
 
   def validate_follow_ids(changeset) do

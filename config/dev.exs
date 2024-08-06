@@ -65,3 +65,13 @@ config :kaffy,
   otp_app: :stat, # required
   ecto_repo: Stat.Repo, # required
   router: StatWeb.Router # required
+
+# Guardian
+config :stat, Stat.Guardian,
+  issuer: "stat",
+  secret_key: "toTw7maGff2I7Bj14oMx0ryAga6qUxg34un6IhUadKN7tkL/NRHr2RwZ6F3bkqdp",
+  token_ttl: %{
+    "access" => {30, :minutes},
+    "refresh" => {30, :days},
+    "confirmation" => {1, :day}
+  }

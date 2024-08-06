@@ -1,0 +1,17 @@
+query getFollowersAndFollowing {
+  getFollowers {
+    avatar {
+      options
+      style
+    }
+    username
+  }
+  
+  getFollowing {
+    avatar {
+      options
+      style
+    }
+    username
+  }
+}

@@ -7,8 +7,8 @@ defmodule StatWeb.Schemas.Users do
   end
 
   input_object :avatar_input do
-    field :style, :string
-    field :options, :string # JSON
+    field :style, non_null(:string)
+    field :options, non_null(:string) # JSON
   end
 
   object :public_user do
@@ -17,12 +17,16 @@ defmodule StatWeb.Schemas.Users do
   end
 
   object :private_user do
-    field :email, :string
-    field :public, :public_user
+    field :email, non_null(:string)
+    field :public, non_null(:public_user)
+  end
+
+  object :follow_token do
+    field :token, non_null(:string)
   end
 
   object :follow do
-    field :follower, :public_user
-    field :followee, :public_user
+    field :follower, non_null(:public_user)
+    field :followee, non_null(:public_user)
   end
 end

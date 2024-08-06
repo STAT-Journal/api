@@ -67,17 +67,8 @@ config :logger, :filter_parameters, ["token"]
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
 
-# Guardian
-config :stat, Stat.Guardian,
-  issuer: "stat",
-  secret_key: "toTw7maGff2I7Bj14oMx0ryAga6qUxg34un6IhUadKN7tkL/NRHr2RwZ6F3bkqdp"
-
 config :guardian, Guardian.DB,
-  repo: Stat.Repo, # Add your repository module
-  schema_name: "guardian_tokens", # default
-  sweep_interval: 60 # default: 60 minutes
-
-
+  adapter: Stat.GuardianCachex
 
 # Background jobs
 config :stat, Stat.PeriodicConsumablesScheduler,

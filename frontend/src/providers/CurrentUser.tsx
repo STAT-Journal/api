@@ -7,6 +7,7 @@ import { createAvatar, Style } from "@dicebear/core";
 import { toPng } from "@dicebear/converter";
 import * as collection from "@dicebear/collection";
 import { useRefreshData } from "./AuthDataStorage";
+import { getAvatarImageUri } from "../components/AvatarImage";
 
 export interface CurrentUserContextInterface {
   me: PrivateUser | undefined | null;
@@ -22,9 +23,6 @@ export const CurrentUserContext = createContext<CurrentUserContextInterface>({
   logout: () => {}
 });
 
-function snakeCaseToCamelCase(snakeCase: string) {
-  return snakeCase.replace(/-[a-z]/g, (letter) => `${letter[1].toUpperCase()}`);
-}
 
 
 export const CurrentUserProvider = ({children}: {children: any}) => {
@@ -35,7 +33,7 @@ export const CurrentUserProvider = ({children}: {children: any}) => {
   const setRefreshData = refreshDataContext.setAuthData;
   const shouldPause = refreshData === null;
 
-  const [result, reExecuteResult ] = useQuery({ query: graphql(`query myProfile {\n  me {\n    email\n    public {\n      avatar {\n        options\n        style\n      }\n      username\n    }\n  }\n}`),
+  const [result, reExecuteResult ] = useQuery({query: graphql(`query myProfile {\n  me {\n    email\n    public {\n      avatar {\n        options\n        style\n      }\n      username\n    }\n  }\n}`),
     pause: shouldPause
    });
 
@@ -64,15 +62,10 @@ export const CurrentUserProvider = ({children}: {children: any}) => {
     console.log("CurrentUserQueryResult: ", result);
 
     if (avatarIsSet) {
-      const avatar = result.data?.me?.public?.avatar;
-      const options = JSON.parse(avatar?.options?? "{}");
-      const styleName = snakeCaseToCamelCase(avatar?.style?? "");
-      const style = collection[styleName as keyof typeof collection] as Style<{ seed: string; }>;
-
-      const createdAvatar = createAvatar(style, options);
-      toPng(createdAvatar).toDataUri().then((dataUri) => {
-        setAvatarImageUri(dataUri);
-      });}
+      getAvatarImageUri(result.data?.me.public.avatar).then((uri) => {
+        setAvatarImageUri(uri);
+      });
+    }
     else {
       setAvatarImageUri(undefined);
     }

@@ -1,15 +1,16 @@
 import { useMutation, useQuery } from "urql";
 import { graphql } from "../gql/codegen";
-import { Button, Input, notification, Timeline } from "antd";
+import { Button, Input, Timeline } from "antd";
 import { TextPost } from "../gql/codegen/graphql";
 import { useState } from "react";
+import { useNotification } from "../providers/Notification";
 
 export default function Reflection() {
     const reflectionQuery = graphql(`query listTextPosts {\n  listTextPosts {\n    body\n    insertedAt\n  }\n}`);
     const [reflectionResult,_] = useQuery({ query: reflectionQuery});
     const [newTextPostData, setNewTextPostData] = useState({body: ""});
     const [_newTextPostMutationResult, newTextPost] = useMutation(graphql(`mutation createTextPost($body: String!) {\n  createTextPost(body: $body) {\n    body\n  }\n}`));
-    const [api, contextHolder] = notification.useNotification();
+    const {api} = useNotification();
     const handleTextPostChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewTextPostData({body: e.target.value});
     }
@@ -21,14 +22,14 @@ export default function Reflection() {
                 api.error({message: "Failed to submit text post", description: result.error.message});
             } else {
                 api.success({message: "Successfully submitted text post"});
+                setNewTextPostData({body: ""});
             }
         });
     }
 
     return (
         <>
-        {contextHolder}
-        <Input.TextArea onChange={handleTextPostChange} placeholder="Write your reflection here" />
+        <Input.TextArea value={newTextPostData.body} onChange={handleTextPostChange} placeholder="Write your reflection here" />
         <Button onClick={handleTextPostSubmit}>Submit</Button>
         <Timeline>
             {reflectionResult.data?.listTextPosts?.map((post: TextPost) => {

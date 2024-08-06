@@ -1,12 +1,9 @@
 import { useNavigate, useOutlet } from "react-router-dom";
 import TopBar from "../components/TopBar";
-import { useEffect, useState } from "react";
-import { AuthUtilities, AuthConfig, authExchange } from "@urql/exchange-auth";
-import { SelectionNode } from "graphql";
-import { Operation, CombinedError, OperationResult, Client, cacheExchange, fetchExchange, Provider, subscriptionExchange } from "urql";
+import { useEffect } from "react";
 import { AuthBlob } from "../gql/codegen/graphql";
-import { graphql } from '../gql/codegen';
 import { CurrentUserProvider } from "../providers/CurrentUser";
+import {  } from "../providers/Graphql";
 import { Layout } from "antd";
 
 export interface RootProps {
@@ -16,9 +13,7 @@ export interface RootProps {
 
 export default function Root() {
     const outlet = useOutlet();
-    const navigate = useNavigate();
-
-    
+    const navigate = useNavigate();    
 
     useEffect(() => {
         if (outlet === null) {

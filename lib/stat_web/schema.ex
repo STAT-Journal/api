@@ -26,8 +26,20 @@ defmodule StatWeb.Schema do
 
   query do
     # User-related queries
-    field :me, :private_user do
+    field :me, non_null(:private_user) do
       resolve &Users.get_user/3
+    end
+
+    field :get_follow_token, :string do
+      resolve &Users.get_follow_token/3
+    end
+
+    field :get_followers, non_null(list_of(non_null(:public_user))) do
+      resolve &Users.get_followers/3
+    end
+
+    field :get_following, non_null(list_of(non_null(:public_user))) do
+      resolve &Users.get_following/3
     end
 
     # Post-related queries
@@ -41,6 +53,10 @@ defmodule StatWeb.Schema do
 
     field :list_moments, non_null(list_of(:moment)) do
       resolve &Posts.list_moments/3
+    end
+
+    field :list_moments_for_graph, non_null(list_of(non_null(:moment_graph_item))) do
+      resolve &Posts.list_moments_for_graph/3
     end
 
     # Consumable-related queries
@@ -79,7 +95,7 @@ defmodule StatWeb.Schema do
     end
 
     field :create_follow, :follow do
-      arg :followed_id, non_null(:id)
+      arg :follow_token, non_null(:string)
       resolve &Users.create_follow/3
     end
 
@@ -105,24 +121,26 @@ defmodule StatWeb.Schema do
       resolve &Presences.presence/3
     end
 
-    # Mosiac-related mutations
-    field :participate_in_mosaic, :mosaic do
-      arg :mosaic_participation, non_null(:mosaic_participation)
-      resolve &Mosaic.participate_in_mosaic/3
+    field :participate_in_mosaic, :integer do
+      arg :mosaic_id, non_null(:integer)
+      resolve &Mosaics.participate_in_mosaic/3
     end
   end
 
   subscription do
-    field :mosaic_circle, :mosaic do
-      config fn _args, _info ->
-        {:ok, topic: "mosaic_circle"}
-      end
+    field :mosaic_instance, :mosaic_instance do
+      resolve &Mosaics.mosaic_instances/3
     end
 
-    field :broadcasts, :broadcast do
-      config fn _args, _info ->
-        {:ok, topic: "broadcasts"}
-      end
-    end
+    # field :mosaic_instance_results, :mosaic_instance_result do
+    #   arg :mosaic_instance_id, non_null(:integer)
+
+    #   config fn args, _info ->
+    #     {:ok, topic: "mosaic_instance_results_#{args.mosaic_instance_id}"}
+    #   end
+
+    #   resolve &Mosaics.mosaic_instance_results/3
+    # end
+
   end
 end

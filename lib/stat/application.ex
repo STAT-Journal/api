@@ -10,6 +10,9 @@ defmodule Stat.Application do
     children = [
       StatWeb.Telemetry,
       Stat.Repo,
+      %{id: :guardian_cachex, start: {Cachex, :start_link, [:guardian, []]}},
+      %{id: :presence_cachex, start: {Cachex, :start_link, [:presence, []]}},
+      %{id: :mosaic_instance_cachex, start: {Cachex, :start_link, [:mosaic_instance, []]}},
       {Ecto.Migrator,
         repos: Application.fetch_env!(:stat, :ecto_repos),
         skip: skip_migrations?()},

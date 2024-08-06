@@ -168,10 +168,16 @@ defmodule Stat.Accounts do
     Guardian.revoke(token, token_type: "refresh")
   end
 
-  def create_follow(attrs) do
-    %Follow{}
-    |> Follow.changeset(attrs)
-    |> Repo.insert()
+  def create_follow(follow_token, user) do
+    case Guardian.resource_from_token(follow_token, %{}, token_type: "follow") do
+      {:ok, followed, _} ->
+        %Follow{}
+        |> Ecto.Changeset.cast(%{}, [])
+        |> Ecto.Changeset.cast_assoc(:follower, user)
+        |> Ecto.Changeset.cast_assoc(:followed, followed)
+        |> Repo.insert()
+      {:error, _} -> {:error, "Invalid Token"}
+    end
   end
 
   def get_user_by_email(email) do
@@ -259,5 +265,35 @@ defmodule Stat.Accounts do
       nil -> {:error, "User not found"}
       user -> {:ok, Map.put(user, :public, %{avatar: avatar, username: user.username})}
     end
+  end
+
+  def get_follow_token(user) do
+    Stat.Guardian.encode_and_sign(user, %{}, token_type: "follow", ttl: @default_follow_token_ttl)
+    |> case do
+      {:ok, token, _claims} -> {:ok, token}
+      {:error, _} -> {:error, "Server error. Please try again later."}
+    end
+  end
+
+  def get_followers(user) do
+    {:ok, Follow
+    |> where([f], f.followed_id == ^user.id)
+    |> preload([:follower, follower: :avatar])
+    |> Repo.all()
+    |> Enum.map(fn f -> %{
+      username: f.follower.username,
+      avatar: f.follower.avatar }
+    end) }
+  end
+
+  def get_following(user) do
+    {:ok, Follow
+    |> where([f], f.follower_id == ^user.id)
+    |> preload([:followed, followed: :avatar])
+    |> Repo.all()
+    |> Enum.map(fn f -> %{
+      username: f.followed.username,
+      avatar: f.followed.avatar }
+    end) }
   end
 end

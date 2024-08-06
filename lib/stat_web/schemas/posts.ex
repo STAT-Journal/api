@@ -16,6 +16,12 @@ defmodule StatWeb.Schemas.Posts do
     value :bad
   end
 
+  object :moment_graph_item do
+    field :inserted_at, non_null(:string) # ISO8601
+    field :good, :integer
+    field :bad, :integer
+  end
+
   object :moment do
     field :type, non_null(:moment_type)
     field :inserted_at, non_null(:string) # ISO8601

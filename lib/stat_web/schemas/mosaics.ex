@@ -1,14 +1,18 @@
 defmodule StatWeb.Schemas.Mosaics do
   use Absinthe.Schema.Notation
 
-  object :mosaic do
-    field :id, :id
-    field :created_at, :integer
-    field :ends_at, :integer
-    field :size, :integer
+  object :mosaic_instance do
+    field :id, :integer
+    field :created_at, :string
   end
 
-  input_object :mosaic_participation do
-    field :mosaic_id, :id
+  object :participation_result do
+    field :interactions, non_null(:integer)
+  end
+
+  object :mosaic_result do
+    field :id, :integer
+    field :seed, :integer
+    field :participation_results, non_null(list_of(:participation_result))
   end
 end

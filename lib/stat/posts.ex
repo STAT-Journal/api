@@ -79,6 +79,25 @@ defmodule Stat.Posts do
     }
   end
 
+  def list_moments_for_graph(user) do
+    result = Moment
+    |> where(user_id: ^user.id)
+    |> order_by(desc: :inserted_at)
+    |> Repo.all()
+    |> Enum.chunk_by(fn m -> {m.inserted_at.year, m.inserted_at.month, m.inserted_at.day} end)
+    |> Enum.map(fn chunk ->
+      inserted_at = DateTime.to_iso8601(Enum.at(chunk, 0).inserted_at)
+      Enum.chunk_by(chunk, fn c -> c.type end)
+      |> Enum.map(fn c -> {Enum.at(c, 0).type, Enum.count(c)} end)
+      |> Map.new()
+      |> Map.put(:inserted_at, inserted_at)
+    end)
+
+    IO.inspect(result)
+
+    {:ok, result}
+  end
+
   def create_moment(args) do
     %Moment{}
     |> Moment.changeset(args)

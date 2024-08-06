@@ -5,7 +5,7 @@ schema {
 
 type Query {
   me: User
-  verifyRenewalToken(renewalToken: String!): User
+  verifyrefreshToken(refreshToken: String!): User
   verifySessionToken(sessionToken: String!): User
   listTextPosts: [TextPost]
   unsafeCheckIfUserCanCheckIn: Boolean
@@ -14,10 +14,10 @@ type Query {
 
 type Mutation {
   register(email: String!, password: String!): User
-  getRenewalFromEmailToken(emailToken: String!): String
-  getRenewalToken(email: String!, password: String!, deviceName: String!): String
-  renewRenewalToken(renewalToken: String!): String
-  getSessionToken(renewalToken: String!): String
+  getrefreshFromEmailToken(emailToken: String!): String
+  getrefreshToken(email: String!, password: String!, deviceName: String!): String
+  renewrefreshToken(refreshToken: String!): String
+  getSessionToken(refreshToken: String!): String
   renewSessionToken(sessionToken: String!): String
   createProfile(username: String!): Profile
   createFollow(followedId: ID!): Follow

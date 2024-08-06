@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useMutation } from "urql";
 import * as collection from "@dicebear/collection";
 import { StepProps } from "./Utils";
-import { Button, Flex, Grid, Skeleton } from "antd";
+import { Button, Flex, Skeleton } from "antd";
 
 interface StyleOptionProps {
     index: number;

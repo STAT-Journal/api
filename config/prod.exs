@@ -22,3 +22,12 @@ config :logger, level: :info
 
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
+# Guardian
+config :stat, Stat.Guardian,
+  issuer: "stat",
+  secret_key: System.get_env("GUARDIAN_SECRET_KEY"),
+  token_ttl: %{
+    "access" => {30, :minutes},
+    "refresh" => {30, :days},
+    "confirmation" => {1, :day}
+  }

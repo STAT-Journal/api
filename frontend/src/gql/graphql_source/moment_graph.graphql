@@ -1,6 +1,7 @@
-query listMoments {
-    listMoments{
-        type
-        insertedAt
-    }
+query listMomentsForGraph {
+  listMomentsForGraph {
+    good
+    bad
+    insertedAt
+  }
 }
