@@ -77,3 +77,11 @@ config :stat, Stat.PeriodicConsumablesScheduler,
 
 config :absinthe,
   schema: StatWeb.Schema
+
+config :stat, Oban,
+  plugins: [
+    {Oban.Plugins.Cron,
+    crontab: [
+      {"*/5 * * * *", Stat.Jobs.Mosaic, []},
+    ]}
+  ]

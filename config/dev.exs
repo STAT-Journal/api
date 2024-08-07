@@ -75,3 +75,12 @@ config :stat, Stat.Guardian,
     "refresh" => {30, :days},
     "confirmation" => {1, :day}
   }
+
+config :stat, Oban,
+  engine: Oban.Engines.Lite,
+  queues: [
+    content_processing: 20,
+    mosaic: 80,
+
+  ],
+  repo: Stat.Repo

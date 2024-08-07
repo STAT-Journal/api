@@ -2,6 +2,11 @@ defmodule Stat.Guardian do
   use Guardian,
     otp_app: :stat
 
+  def subject_for_token(%{id: id}, %{typ: "room"}) do
+    sub = "room:#{to_string(id)}"
+    {:ok, sub}
+  end
+
   def subject_for_token(%{id: id}, _claims) do
     sub = to_string(id)
     {:ok, sub}
@@ -9,6 +14,10 @@ defmodule Stat.Guardian do
 
   def subject_for_token(_, _) do
     {:error, "Invalid subject"}
+  end
+
+  def resource_from_claims(%{"sub" => id, "typ" => "room"}) do
+    Stat.Room.get_room!(id)
   end
 
   def resource_from_claims(%{"sub" => id}) do

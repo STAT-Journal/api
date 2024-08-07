@@ -1,0 +1,6 @@
+subscription newMosaicInstances {
+  mosaicInstance {
+    createdAt
+    id
+  }
+}

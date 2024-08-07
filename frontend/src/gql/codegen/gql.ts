@@ -19,6 +19,7 @@ const documents = {
     "query getFollowersAndFollowing {\n  getFollowers {\n    avatar {\n      options\n      style\n    }\n    username\n  }\n  getFollowing {\n    avatar {\n      options\n      style\n    }\n    username\n  }\n}": types.GetFollowersAndFollowingDocument,
     "query listTextPosts {\n  listTextPosts {\n    body\n    insertedAt\n  }\n}": types.ListTextPostsDocument,
     "query listMomentsForGraph {\n  listMomentsForGraph {\n    good\n    bad\n    insertedAt\n  }\n}": types.ListMomentsForGraphDocument,
+    "subscription newMosaicInstances {\n  mosaicInstance {\n    createdAt\n    id\n  }\n}": types.NewMosaicInstancesDocument,
     "mutation createMoment($type: MomentType!) {\n  createMoment(type: $type) {\n    insertedAt\n    type\n  }\n}": types.CreateMomentDocument,
     "mutation createTextPost($body: String!) {\n  createTextPost(body: $body) {\n    body\n  }\n}": types.CreateTextPostDocument,
     "mutation registerWithEmail($email: String!) {\n  register(email: $email)\n}": types.RegisterWithEmailDocument,
@@ -65,6 +66,10 @@ export function graphql(source: "query listTextPosts {\n  listTextPosts {\n    b
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "query listMomentsForGraph {\n  listMomentsForGraph {\n    good\n    bad\n    insertedAt\n  }\n}"): (typeof documents)["query listMomentsForGraph {\n  listMomentsForGraph {\n    good\n    bad\n    insertedAt\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "subscription newMosaicInstances {\n  mosaicInstance {\n    createdAt\n    id\n  }\n}"): (typeof documents)["subscription newMosaicInstances {\n  mosaicInstance {\n    createdAt\n    id\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

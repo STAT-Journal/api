@@ -47,6 +47,10 @@ export default function Router() {
         {
           path: "profile",
           element: <Profile />,
+        },
+        {
+          path: "/mosaic:id",
+          element : <div></div>
         }
       ]
     },

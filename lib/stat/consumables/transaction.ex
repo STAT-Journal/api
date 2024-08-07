@@ -7,6 +7,7 @@ defmodule Stat.Consumables.Transaction do
 
     belongs_to :user, Stat.Accounts.User
     belongs_to :sticker_type, Stat.Consumables.StickerType
+    
 
     timestamps(type: :utc_datetime)
   end

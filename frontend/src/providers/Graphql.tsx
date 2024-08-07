@@ -1,12 +1,14 @@
 import { AuthConfig, authExchange, AuthUtilities } from "@urql/exchange-auth";
 import { AuthBlob } from "../gql/codegen/graphql";
-import { cacheExchange, Client, CombinedError, fetchExchange, Operation, OperationResult, Provider } from "urql";
+import { cacheExchange, Client, CombinedError, fetchExchange, Operation, OperationResult, Provider, subscriptionExchange } from "urql";
 import { useRefreshData } from "./AuthDataStorage";
 import { graphql } from "../gql/codegen";
 import { SelectionNode } from "graphql";
 import { useEffect, useState } from "react";
 import * as withAbsintheSocket from "@absinthe/socket";
-import { Socket as PhoenixSocket } from "phoenix";
+import { Channel, Socket as PhoenixSocket } from "phoenix";
+import { make, pipe, toObservable } from 'wonka'
+
 
 
 
@@ -14,28 +16,49 @@ export function GraphqlProvider({ children }: { children: React.ReactNode }) {
     const refreshDataContext = useRefreshData();
     const refreshData = refreshDataContext.authData;
     const setRefreshData = refreshDataContext.setAuthData;
-    const [phoenixSocket, setPhoenixSocket] = useState<PhoenixSocket | null>(null);
-    const [_absintheSocket, setAbsintheSocket] = useState<withAbsintheSocket.AbsintheSocket | null>(null);
     const [accessData, setAccessData] = useState<AuthBlob | null>(null);
 
     const phoenixSockeWsUrl = window.location.origin.replace(/^http/, 'ws') + '/socket';
-    useEffect(() => {
-        if (!phoenixSocket) {
-            const socket = new PhoenixSocket(phoenixSockeWsUrl, {
-                params: () => {
-                    return {
-                        token: accessData?.token
-                    }
-                }
-            });
-            setPhoenixSocket(socket);
-            setAbsintheSocket(withAbsintheSocket.create(socket));
+    
+
+    // TODO: may need to put this in a useEffect
+    const socket = new PhoenixSocket(phoenixSockeWsUrl, {
+        params: () => {
+            return {
+                authorization: `Bearer ${accessData?.token}`
+            }
         }
-    }, [accessData]);
-    
+    });
+    socket.connect()
+    const absintheChannel = socket.channel('__absinthe__:control')
+    absintheChannel.join()
 
-    
-
+    const absintheExchange = subscriptionExchange({
+        forwardSubscription({ query, variables }) {
+          let subscriptionChannel: Channel
+      
+          const source = make((observer) => {
+            const { next } = observer
+      
+            absintheChannel.push('doc', { query, variables }).receive('ok', (v) => {
+              const subscriptionId = v.subscriptionId
+      
+              if (subscriptionId) {
+                subscriptionChannel = socket.channel(subscriptionId)
+                subscriptionChannel.on('subscription:data', (value) => {
+                  next(value.result)
+                })
+              }
+            })
+      
+            return () => {
+              subscriptionChannel?.leave()
+            }
+          })
+      
+          return pipe(source, toObservable)
+        },
+      })
     
     async function authExchangeConfiguration(utils: AuthUtilities): Promise<AuthConfig> {        
         return {
@@ -109,8 +132,9 @@ export function GraphqlProvider({ children }: { children: React.ReactNode }) {
         exchanges: [
         cacheExchange,
         authExchange(authExchangeConfiguration),
-        fetchExchange,     
-        ],
+        fetchExchange,
+        absintheExchange
+        ]
     })
 
 

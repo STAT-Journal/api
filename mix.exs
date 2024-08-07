@@ -32,6 +32,7 @@ defmodule Stat.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:oban, "~> 2.18"},
       {:cachex, "~> 3.6"},
       {:kaffy, "~> 0.10.0"},
       {:browser, "~> 0.5.4"},

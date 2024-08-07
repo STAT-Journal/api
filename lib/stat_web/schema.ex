@@ -43,6 +43,7 @@ defmodule StatWeb.Schema do
     end
 
     # Post-related queries
+
     field :list_text_posts, non_null(list_of(non_null(:text_post))) do
       resolve &Posts.list_text_posts/3
     end
@@ -125,11 +126,27 @@ defmodule StatWeb.Schema do
       arg :mosaic_id, non_null(:integer)
       resolve &Mosaics.participate_in_mosaic/3
     end
+
+    field :be_present, :string do # SVG of other avatars lol
+      arg :avatar_svg, non_null(:string)
+      resolve fn args, _info ->
+        {:ok, args.avatar_svg}
+      end
+
+    end
   end
 
   subscription do
-    field :mosaic_instance, :mosaic_instance do
-      resolve &Mosaics.mosaic_instances/3
+    field :presence, :string do # SVG of other avatars lol
+      config fn _args, _info ->
+        {:ok, topic: "presence"}
+      end
+
+      trigger :be_present, topic: fn _ -> "presence" end
+
+      resolve fn args, _, _info ->
+        {:ok, args}
+      end
     end
 
     # field :mosaic_instance_results, :mosaic_instance_result do
